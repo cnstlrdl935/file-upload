@@ -2,11 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>파일 업로드</title>
 
@@ -17,59 +13,56 @@
 
     body {
       margin: 0;
-      padding: 30px 15px;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      background: #f5f6f8;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      background: #f5f7fb;
       color: #222;
     }
 
     .container {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
+      width: min(700px, calc(100% - 32px));
+      margin: 60px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
-      text-align: center;
-      margin-bottom: 25px;
+      margin: 0 0 10px;
+      font-size: 28px;
     }
 
-    .upload-box {
-      background: white;
-      border: 2px dashed #999;
-      border-radius: 16px;
-      padding: 50px 20px;
+    .description {
+      margin: 0 0 25px;
+      color: #666;
+    }
+
+    .drop-zone {
+      border: 2px dashed #aaa;
+      border-radius: 14px;
+      padding: 45px 20px;
       text-align: center;
       cursor: pointer;
       transition: 0.2s;
+      background: #fafafa;
     }
 
-    .upload-box:hover {
+    .drop-zone:hover,
+    .drop-zone.dragover {
       border-color: #333;
+      background: #f0f0f0;
     }
 
-    .upload-box.dragover {
-      border-color: #007bff;
-      background: #eef6ff;
-    }
-
-    .upload-icon {
-      font-size: 50px;
-      margin-bottom: 15px;
-    }
-
-    .upload-text {
+    .drop-zone strong {
+      display: block;
       font-size: 18px;
-      font-weight: bold;
+      margin-bottom: 8px;
     }
 
-    .upload-subtext {
-      margin-top: 8px;
+    .drop-zone span {
       color: #777;
       font-size: 14px;
     }
@@ -78,547 +71,601 @@
       display: none;
     }
 
-    .selected-files {
-      margin-top: 20px;
+    .file-list {
+      margin-top: 25px;
     }
 
     .file-item {
-      background: white;
+      border: 1px solid #ddd;
       border-radius: 12px;
       padding: 15px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 12px;
+      background: #fff;
     }
 
     .file-name {
       font-weight: bold;
       word-break: break-all;
+      margin-bottom: 6px;
     }
 
     .file-size {
-      color: #777;
       font-size: 13px;
-      margin-top: 5px;
+      color: #777;
+      margin-bottom: 10px;
     }
 
     .progress-container {
-      margin-top: 10px;
+      width: 100%;
+      height: 8px;
       background: #e5e5e5;
       border-radius: 10px;
-      height: 10px;
       overflow: hidden;
     }
 
-    .progress-bar {
-      width: 0%;
+    .progress {
       height: 100%;
-      background: #007bff;
+      width: 0%;
+      background: #333;
       transition: width 0.2s;
     }
 
     .status {
-      margin-top: 7px;
-      font-size: 13px;
-    }
-
-    .button-area {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 13px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #007bff;
-      color: white;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .uploaded-section {
-      margin-top: 40px;
-    }
-
-    .uploaded-section h2 {
-      margin-bottom: 15px;
-    }
-
-    .uploaded-item {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 10px;
-    }
-
-    .uploaded-item a {
-      color: #007bff;
-      text-decoration: none;
-      word-break: break-all;
-    }
-
-    .empty {
-      background: white;
-      padding: 25px;
-      text-align: center;
-      border-radius: 12px;
-      color: #777;
-    }
-
-    .error {
-      color: #d00;
+      margin-top: 8px;
+      font-size: 14px;
     }
 
     .success {
-      color: #087f23;
+      color: #16803c;
+    }
+
+    .error {
+      color: #d32f2f;
+    }
+
+    .upload-button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #222;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .upload-button:hover {
+      background: #444;
+    }
+
+    .upload-button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
+    .clear-button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: white;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .server-status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f1f1f1;
+      font-size: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin: 25px auto;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h1>파일 업로드</h1>
+    <div class="card">
 
-  <div
-    class="upload-box"
-    id="uploadBox"
-  >
-    <div class="upload-icon">📁</div>
+      <h1>파일 업로드</h1>
 
-    <div class="upload-text">
-      파일을 선택하거나 여기로 끌어다 놓으세요
-    </div>
+      <p class="description">
+        업로드할 파일을 선택하거나 이곳에 끌어다 놓으세요.
+      </p>
 
-    <div class="upload-subtext">
-      여러 파일을 동시에 선택할 수 있습니다.
-    </div>
-
-    <input
-      type="file"
-      id="fileInput"
-      multiple
-    >
-  </div>
-
-
-  <div
-    class="selected-files"
-    id="selectedFiles"
-  ></div>
-
-
-  <div class="button-area">
-    <button
-      id="uploadButton"
-      disabled
-    >
-      업로드
-    </button>
-  </div>
-
-
-  <div class="uploaded-section">
-
-    <h2>업로드된 파일</h2>
-
-    <div id="uploadedFiles">
-      <div class="empty">
-        업로드된 파일을 불러오는 중...
+      <div class="drop-zone" id="dropZone">
+        <strong>파일을 선택하세요</strong>
+        <span>클릭하거나 파일을 드래그해서 업로드할 수 있습니다.</span>
       </div>
+
+      <input
+        type="file"
+        id="fileInput"
+        multiple
+      >
+
+      <div class="file-list" id="fileList"></div>
+
+      <button
+        class="upload-button"
+        id="uploadButton"
+        disabled
+      >
+        파일 업로드
+      </button>
+
+      <button
+        class="clear-button"
+        id="clearButton"
+      >
+        선택한 파일 모두 지우기
+      </button>
+
+      <div
+        class="server-status"
+        id="serverStatus"
+      >
+        서버 연결 확인 중...
+      </div>
+
     </div>
 
   </div>
 
-</div>
+
+  <script>
+
+    // Cloudflare Worker 주소
+    const API = "https://files.hjcone.worker.dev";
 
 
-<script>
-
-  // Cloudflare Worker 주소
-  const API =
-    "https://files.hjcone.worker.dev";
-
-
-  const uploadBox =
-    document.getElementById("uploadBox");
-
-  const fileInput =
-    document.getElementById("fileInput");
-
-  const selectedFiles =
-    document.getElementById("selectedFiles");
-
-  const uploadButton =
-    document.getElementById("uploadButton");
-
-  const uploadedFiles =
-    document.getElementById("uploadedFiles");
+    const fileInput = document.getElementById("fileInput");
+    const dropZone = document.getElementById("dropZone");
+    const fileList = document.getElementById("fileList");
+    const uploadButton = document.getElementById("uploadButton");
+    const clearButton = document.getElementById("clearButton");
+    const serverStatus = document.getElementById("serverStatus");
 
 
-  let filesToUpload = [];
+    let selectedFiles = [];
 
 
-  // 파일 선택창 열기
-  uploadBox.addEventListener("click", () => {
-    fileInput.click();
-  });
+    // --------------------------------
+    // 파일 크기 표시
+    // --------------------------------
+
+    function formatFileSize(bytes) {
+
+      if (bytes < 1024) {
+        return bytes + " B";
+      }
+
+      if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + " KB";
+      }
+
+      if (bytes < 1024 * 1024 * 1024) {
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
+      return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    }
 
 
-  // 파일 선택
-  fileInput.addEventListener("change", () => {
+    // --------------------------------
+    // 파일 선택
+    // --------------------------------
 
-    addFiles(
-      Array.from(fileInput.files)
-    );
+    fileInput.addEventListener("change", function () {
 
-  });
+      addFiles(Array.from(fileInput.files));
 
-
-  // 드래그 시작
-  uploadBox.addEventListener("dragover", (event) => {
-
-    event.preventDefault();
-
-    uploadBox.classList.add("dragover");
-
-  });
-
-
-  // 드래그 종료
-  uploadBox.addEventListener("dragleave", () => {
-
-    uploadBox.classList.remove("dragover");
-
-  });
-
-
-  // 파일 놓기
-  uploadBox.addEventListener("drop", (event) => {
-
-    event.preventDefault();
-
-    uploadBox.classList.remove("dragover");
-
-    const files =
-      Array.from(event.dataTransfer.files);
-
-    addFiles(files);
-
-  });
-
-
-  // 파일 추가
-  function addFiles(files) {
-
-    filesToUpload =
-      filesToUpload.concat(files);
-
-    renderSelectedFiles();
-
-    uploadButton.disabled =
-      filesToUpload.length === 0;
-
-  }
-
-
-  // 선택된 파일 표시
-  function renderSelectedFiles() {
-
-    selectedFiles.innerHTML = "";
-
-    filesToUpload.forEach((file, index) => {
-
-      const item =
-        document.createElement("div");
-
-      item.className = "file-item";
-
-      item.innerHTML = `
-
-        <div class="file-name">
-          ${escapeHtml(file.name)}
-        </div>
-
-        <div class="file-size">
-          ${formatBytes(file.size)}
-        </div>
-
-        <div class="progress-container">
-
-          <div
-            class="progress-bar"
-            id="progress-${index}"
-          ></div>
-
-        </div>
-
-        <div
-          class="status"
-          id="status-${index}"
-        >
-          대기 중
-        </div>
-
-      `;
-
-      selectedFiles.appendChild(item);
+      fileInput.value = "";
 
     });
 
-  }
+
+    // --------------------------------
+    // 드롭 영역 클릭
+    // --------------------------------
+
+    dropZone.addEventListener("click", function () {
+
+      fileInput.click();
+
+    });
 
 
-  // 업로드 시작
-  uploadButton.addEventListener("click", async () => {
+    // --------------------------------
+    // 드래그 앤 드롭
+    // --------------------------------
 
-    if (filesToUpload.length === 0) {
-      return;
+    dropZone.addEventListener("dragover", function (event) {
+
+      event.preventDefault();
+
+      dropZone.classList.add("dragover");
+
+    });
+
+
+    dropZone.addEventListener("dragleave", function () {
+
+      dropZone.classList.remove("dragover");
+
+    });
+
+
+    dropZone.addEventListener("drop", function (event) {
+
+      event.preventDefault();
+
+      dropZone.classList.remove("dragover");
+
+      const files = Array.from(event.dataTransfer.files);
+
+      addFiles(files);
+
+    });
+
+
+    // --------------------------------
+    // 파일 추가
+    // --------------------------------
+
+    function addFiles(files) {
+
+      if (!files || files.length === 0) {
+        return;
+      }
+
+      selectedFiles.push(...files);
+
+      renderFileList();
+
     }
 
-    uploadButton.disabled = true;
 
-    for (
-      let i = 0;
-      i < filesToUpload.length;
-      i++
-    ) {
+    // --------------------------------
+    // 파일 목록 표시
+    // --------------------------------
 
-      await uploadFile(
-        filesToUpload[i],
-        i
-      );
+    function renderFileList() {
+
+      fileList.innerHTML = "";
+
+      selectedFiles.forEach((file, index) => {
+
+        const item = document.createElement("div");
+
+        item.className = "file-item";
+
+        item.innerHTML = `
+          <div class="file-name"></div>
+
+          <div class="file-size"></div>
+
+          <div class="progress-container">
+            <div
+              class="progress"
+              id="progress-${index}"
+            ></div>
+          </div>
+
+          <div
+            class="status"
+            id="status-${index}"
+          >
+            업로드 대기 중
+          </div>
+        `;
+
+        item.querySelector(".file-name").textContent = file.name;
+
+        item.querySelector(".file-size").textContent =
+          formatFileSize(file.size);
+
+        fileList.appendChild(item);
+
+      });
+
+
+      uploadButton.disabled = selectedFiles.length === 0;
 
     }
 
-    filesToUpload = [];
 
-    fileInput.value = "";
+    // --------------------------------
+    // 파일을 Base64로 변환
+    // --------------------------------
 
-    uploadButton.disabled = true;
+    function fileToBase64(file) {
 
-    await loadUploadedFiles();
+      return new Promise((resolve, reject) => {
 
-  });
+        const reader = new FileReader();
+
+        reader.onload = function () {
+          resolve(reader.result);
+        };
+
+        reader.onerror = function () {
+          reject(new Error("파일을 읽을 수 없습니다."));
+        };
+
+        reader.readAsDataURL(file);
+
+      });
+
+    }
 
 
-  // 파일 하나 업로드
-  async function uploadFile(file, index) {
+    // --------------------------------
+    // 업로드
+    // --------------------------------
 
-    const progress =
-      document.getElementById(
+    async function uploadFile(file, index) {
+
+      const progress = document.getElementById(
         `progress-${index}`
       );
 
-    const status =
-      document.getElementById(
+      const status = document.getElementById(
         `status-${index}`
       );
 
 
-    status.textContent =
-      "파일 읽는 중...";
+      try {
+
+        status.textContent = "파일을 읽는 중...";
+        status.className = "status";
+
+        progress.style.width = "20%";
 
 
-    try {
-
-      const base64 =
-        await fileToBase64(file);
+        // Base64 변환
+        const base64 = await fileToBase64(file);
 
 
-      progress.style.width =
-        "50%";
+        progress.style.width = "50%";
+
+        status.textContent = "서버에 업로드하는 중...";
 
 
-      status.textContent =
-        "서버에 업로드 중...";
+        // FormData 생성
+        const formData = new FormData();
+
+        formData.append(
+          "fileName",
+          file.name
+        );
+
+        formData.append(
+          "fileData",
+          base64.split(",")[1]
+        );
 
 
-      const response =
-        await fetch(
+        // Worker 요청
+        const response = await fetch(
           API + "/upload",
           {
             method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              fileName:
-                file.name,
-
-              fileData:
-                base64.split(",")[1]
-
-            })
-
+            body: formData
           }
         );
 
 
-      const result =
-        await response.json();
+        progress.style.width = "80%";
 
 
-      if (!response.ok ||
-          !result.success) {
+        let result;
 
-        throw new Error(
-          result.error ||
-          "업로드 실패"
+        try {
+
+          result = await response.json();
+
+        } catch (error) {
+
+          throw new Error(
+            "서버에서 올바른 응답을 받지 못했습니다."
+          );
+
+        }
+
+
+        if (!response.ok || !result.success) {
+
+          let message =
+            result.error ||
+            "업로드에 실패했습니다.";
+
+          if (result.githubStatus) {
+
+            message +=
+              ` (GitHub 오류 ${result.githubStatus})`;
+
+          }
+
+          throw new Error(message);
+
+        }
+
+
+        progress.style.width = "100%";
+
+        status.textContent =
+          "업로드 성공";
+
+        status.className =
+          "status success";
+
+
+      } catch (error) {
+
+        progress.style.width = "0%";
+
+        status.textContent =
+          "업로드 실패: " +
+          (error.message || "알 수 없는 오류");
+
+        status.className =
+          "status error";
+
+
+        console.error(
+          "업로드 오류:",
+          error
         );
 
       }
 
-
-      progress.style.width =
-        "100%";
-
-
-      status.textContent =
-        "업로드 완료";
-
-      status.className =
-        "status success";
-
-
-    } catch (error) {
-
-      status.textContent =
-        "업로드 실패: " +
-        error.message;
-
-      status.className =
-        "status error";
-
     }
 
-  }
+
+    // --------------------------------
+    // 전체 업로드
+    // --------------------------------
+
+    uploadButton.addEventListener(
+      "click",
+      async function () {
+
+        if (selectedFiles.length === 0) {
+          return;
+        }
 
 
-  // 파일 → Base64
-  function fileToBase64(file) {
+        uploadButton.disabled = true;
 
-    return new Promise(
-      (resolve, reject) => {
-
-        const reader =
-          new FileReader();
+        clearButton.disabled = true;
 
 
-        reader.onload = () => {
+        for (
+          let i = 0;
+          i < selectedFiles.length;
+          i++
+        ) {
 
-          resolve(
-            reader.result
+          await uploadFile(
+            selectedFiles[i],
+            i
           );
 
-        };
+        }
 
 
-        reader.onerror = () => {
+        uploadButton.disabled =
+          selectedFiles.length === 0;
 
-          reject(
-            new Error(
-              "파일을 읽을 수 없습니다."
-            )
-          );
-
-        };
-
-
-        reader.readAsDataURL(file);
+        clearButton.disabled = false;
 
       }
     );
 
-  }
 
+    // --------------------------------
+    // 선택한 파일 삭제
+    // --------------------------------
 
-  // 업로드 목록
-  async function loadUploadedFiles() {
+    clearButton.addEventListener(
+      "click",
+      function () {
 
-    uploadedFiles.innerHTML = `
-      <div class="empty">
-        업로드 목록을 준비 중입니다.
-      </div>
-    `;
+        selectedFiles = [];
 
-    /*
-      현재 Worker에는 /files API가 없습니다.
-      GitHub API를 브라우저에서 직접 호출하지 않기 위해
-      일단 업로드 기능부터 연결합니다.
-    */
+        renderFileList();
 
-    uploadedFiles.innerHTML = `
-      <div class="empty">
-        파일을 업로드하면 GitHub 저장소의
-        uploads 폴더에 저장됩니다.
-      </div>
-    `;
-
-  }
-
-
-  // HTML 특수문자 처리
-  function escapeHtml(text) {
-
-    const div =
-      document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-
-  }
-
-
-  // 파일 크기 표시
-  function formatBytes(bytes) {
-
-    if (bytes === 0) {
-      return "0 B";
-    }
-
-    const units = [
-      "B",
-      "KB",
-      "MB",
-      "GB",
-      "TB"
-    ];
-
-    const i =
-      Math.floor(
-        Math.log(bytes) /
-        Math.log(1024)
-      );
-
-    return (
-      parseFloat(
-        (bytes /
-          Math.pow(1024, i))
-          .toFixed(2)
-      ) +
-      " " +
-      units[i]
+      }
     );
 
-  }
+
+    // --------------------------------
+    // 서버 연결 확인
+    // --------------------------------
+
+    async function checkServer() {
+
+      try {
+
+        const response = await fetch(
+          API + "/",
+          {
+            method: "GET"
+          }
+        );
 
 
-  // 처음 실행
-  loadUploadedFiles();
+        if (!response.ok) {
+          throw new Error(
+            "서버 응답 오류"
+          );
+        }
 
-</script>
+
+        const result =
+          await response.json();
+
+
+        if (result.success) {
+
+          serverStatus.textContent =
+            "서버 연결 정상";
+
+          serverStatus.style.color =
+            "#16803c";
+
+        } else {
+
+          throw new Error(
+            "서버 응답이 올바르지 않습니다."
+          );
+
+        }
+
+
+      } catch (error) {
+
+        serverStatus.textContent =
+          "서버 연결 실패: " +
+          error.message;
+
+        serverStatus.style.color =
+          "#d32f2f";
+
+
+        console.error(
+          "서버 연결 오류:",
+          error
+        );
+
+      }
+
+    }
+
+
+    // 처음 실행
+    checkServer();
+
+  </script>
 
 </body>
 </html>
