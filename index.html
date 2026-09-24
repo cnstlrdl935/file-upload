@@ -1,1251 +1,594 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>파일 업로드</title>
-
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    body {
-
-      margin: 0;
-
-      min-height: 100vh;
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        "Noto Sans KR",
-        Arial,
-        sans-serif;
-
-      background:
-        linear-gradient(
-          135deg,
-          #f7f9fc 0%,
-          #eef2f7 100%
-        );
-
-      color:
-        #1f2937;
-    }
-
-
-    .container {
-
-      width:
-        min(
-          680px,
-          calc(100% - 32px)
-        );
-
-      margin:
-        0 auto;
-
-      padding:
-        60px 0 50px;
-    }
-
-
-    /* =========================
-       헤더
-    ========================= */
-
-    .header {
-
-      text-align:
-        center;
-
-      margin-bottom:
-        30px;
-    }
-
-
-    .logo {
-
-      width:
-        58px;
-
-      height:
-        58px;
-
-      margin:
-        0 auto 18px;
-
-      display:
-        flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      border-radius:
-        18px;
-
-      background:
-        #111827;
-
-      color:
-        white;
-
-      font-size:
-        25px;
-
-      font-weight:
-        700;
-
-      box-shadow:
-        0 10px 25px
-        rgba(
-          17,
-          24,
-          39,
-          0.18
-        );
-    }
-
-
-    h1 {
-
-      margin:
-        0 0 8px;
-
-      font-size:
-        30px;
-
-      font-weight:
-        750;
-
-      letter-spacing:
-        -0.8px;
-
-      color:
-        #111827;
-    }
-
-
-    .subtitle {
-
-      margin:
-        0;
-
-      color:
-        #6b7280;
-
-      font-size:
-        15px;
-    }
-
-
-    /* =========================
-       카드
-    ========================= */
-
-    .card {
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.95
-        );
-
-      border:
-        1px solid
-        rgba(
-          229,
-          231,
-          235,
-          0.9
-        );
-
-      border-radius:
-        22px;
-
-      padding:
-        28px;
-
-      box-shadow:
-        0 12px 35px
-        rgba(
-          15,
-          23,
-          42,
-          0.07
-        );
-    }
-
-
-    /* =========================
-       드래그 앤 드롭
-    ========================= */
-
-    .drop-area {
-
-      display:
-        block;
-
-      border:
-        2px dashed
-        #d1d5db;
-
-      border-radius:
-        18px;
-
-      padding:
-        38px 20px;
-
-      text-align:
-        center;
-
-      transition:
-        0.2s ease;
-
-      cursor:
-        pointer;
-
-      background:
-        #fafafa;
-    }
-
-
-    .drop-area:hover {
-
-      border-color:
-        #9ca3af;
-
-      background:
-        #f8fafc;
-    }
-
-
-    .drop-area.dragover {
-
-      border-color:
-        #111827;
-
-      background:
-        #f0f2f5;
-
-      transform:
-        scale(1.01);
-    }
-
-
-    .upload-icon {
-
-      width:
-        52px;
-
-      height:
-        52px;
-
-      margin:
-        0 auto 14px;
-
-      display:
-        flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      border-radius:
-        15px;
-
-      background:
-        #111827;
-
-      color:
-        white;
-
-      font-size:
-        25px;
-    }
-
-
-    .drop-title {
-
-      font-size:
-        16px;
-
-      font-weight:
-        650;
-
-      color:
-        #374151;
-
-      margin-bottom:
-        7px;
-    }
-
-
-    .drop-description {
-
-      font-size:
-        13px;
-
-      color:
-        #9ca3af;
-    }
-
-
-    #fileInput {
-
-      display:
-        none;
-    }
-
-
-    /* =========================
-       선택된 파일
-    ========================= */
-
-    .selected-file {
-
-      display:
-        none;
-
-      margin-top:
-        16px;
-
-      padding:
-        13px 15px;
-
-      background:
-        #f3f4f6;
-
-      border-radius:
-        12px;
-
-      font-size:
-        13px;
-
-      color:
-        #4b5563;
-
-      word-break:
-        break-all;
-    }
-
-
-    /* =========================
-       버튼
-    ========================= */
-
-    .button {
-
-      width:
-        100%;
-
-      margin-top:
-        18px;
-
-      padding:
-        14px 18px;
-
-      border:
-        none;
-
-      border-radius:
-        13px;
-
-      background:
-        #111827;
-
-      color:
-        white;
-
-      font-size:
-        15px;
-
-      font-weight:
-        650;
-
-      cursor:
-        pointer;
-
-      transition:
-        0.15s ease;
-    }
-
-
-    .button:hover {
-
-      background:
-        #1f2937;
-
-      transform:
-        translateY(-1px);
-
-      box-shadow:
-        0 7px 18px
-        rgba(
-          17,
-          24,
-          39,
-          0.16
-        );
-    }
-
-
-    .button:active {
-
-      transform:
-        translateY(0);
-    }
-
-
-    .button:disabled {
-
-      opacity:
-        0.5;
-
-      cursor:
-        not-allowed;
-
-      transform:
-        none;
-
-      box-shadow:
-        none;
-    }
-
-
-    /* =========================
-       진행률
-    ========================= */
-
-    #progressBox {
-
-      display:
-        none;
-
-      margin-top:
-        22px;
-    }
-
-
-    .progress-header {
-
-      display:
-        flex;
-
-      justify-content:
-        space-between;
-
-      margin-bottom:
-        8px;
-
-      font-size:
-        13px;
-
-      color:
-        #6b7280;
-    }
-
-
-    progress {
-
-      width:
-        100%;
-
-      height:
-        9px;
-
-      border:
-        none;
-
-      appearance:
-        none;
-
-      -webkit-appearance:
-        none;
-    }
-
-
-    progress::-webkit-progress-bar {
-
-      background:
-        #e5e7eb;
-
-      border-radius:
-        999px;
-    }
-
-
-    progress::-webkit-progress-value {
-
-      background:
-        #111827;
-
-      border-radius:
-        999px;
-    }
-
-
-    progress::-moz-progress-bar {
-
-      background:
-        #111827;
-
-      border-radius:
-        999px;
-    }
-
-
-    .speed {
-
-      margin-top:
-        8px;
-
-      text-align:
-        right;
-
-      font-size:
-        12px;
-
-      color:
-        #9ca3af;
-    }
-
-
-    /* =========================
-       메시지
-    ========================= */
-
-    .message {
-
-      display:
-        none;
-
-      margin-top:
-        15px;
-
-      padding:
-        13px 15px;
-
-      border-radius:
-        12px;
-
-      font-size:
-        14px;
-
-      line-height:
-        1.5;
-    }
-
-
-    .success {
-
-      background:
-        #ecfdf5;
-
-      color:
-        #047857;
-
-      border:
-        1px solid
-        #a7f3d0;
-    }
-
-
-    .error {
-
-      background:
-        #fef2f2;
-
-      color:
-        #b91c1c;
-
-      border:
-        1px solid
-        #fecaca;
-    }
-
-
-    /* =========================
-       관리자 버튼
-    ========================= */
-
-    .admin-section {
-
-      margin-top:
-        18px;
-
-      text-align:
-        center;
-    }
-
-
-    .admin-button {
-
-      border:
-        none;
-
-      background:
-        transparent;
-
-      color:
-        #9ca3af;
-
-      font-size:
-        12px;
-
-      cursor:
-        pointer;
-
-      padding:
-        8px 12px;
-
-      border-radius:
-        8px;
-    }
-
-
-    .admin-button:hover {
-
-      background:
-        #f3f4f6;
-
-      color:
-        #4b5563;
-    }
-
-
-    /* =========================
-       관리자 패널
-    ========================= */
-
-    #adminPanel {
-
-      display:
-        none;
-
-      margin-top:
-        18px;
-    }
-
-
-    .admin-header {
-
-      display:
-        flex;
-
-      justify-content:
-        space-between;
-
-      align-items:
-        center;
-
-      gap:
-        15px;
-
-      margin-bottom:
-        20px;
-    }
-
-
-    .admin-title {
-
-      margin:
-        0;
-
-      font-size:
-        18px;
-
-      font-weight:
-        700;
-
-      color:
-        #111827;
-    }
-
-
-    .admin-badge {
-
-      display:
-        inline-block;
-
-      margin-top:
-        5px;
-
-      padding:
-        4px 8px;
-
-      border-radius:
-        999px;
-
-      background:
-        #ecfdf5;
-
-      color:
-        #047857;
-
-      font-size:
-        11px;
-
-      font-weight:
-        600;
-    }
-
-
-    .logout-button {
-
-      border:
-        none;
-
-      background:
-        #f3f4f6;
-
-      color:
-        #4b5563;
-
-      padding:
-        8px 12px;
-
-      border-radius:
-        9px;
-
-      cursor:
-        pointer;
-
-      font-size:
-        12px;
-    }
-
-
-    .logout-button:hover {
-
-      background:
-        #e5e7eb;
-    }
-
-
-    /* =========================
-       관리자 파일
-    ========================= */
-
-    .admin-file {
-
-      display:
-        flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        space-between;
-
-      gap:
-        15px;
-
-      padding:
-        15px 0;
-
-      border-bottom:
-        1px solid
-        #f0f0f0;
-    }
-
-
-    .admin-file:last-child {
-
-      border-bottom:
-        none;
-    }
-
-
-    .admin-file-name {
-
-      font-size:
-        14px;
-
-      word-break:
-        break-all;
-    }
-
-
-    .admin-file-size {
-
-      margin-top:
-        4px;
-
-      color:
-        #9ca3af;
-
-      font-size:
-        12px;
-    }
-
-
-    .admin-actions {
-
-      display:
-        flex;
-
-      gap:
-        6px;
-
-      flex-shrink:
-        0;
-    }
-
-
-    .small-button {
-
-      border:
-        none;
-
-      padding:
-        8px 11px;
-
-      border-radius:
-        8px;
-
-      color:
-        white;
-
-      cursor:
-        pointer;
-
-      font-size:
-        12px;
-    }
-
-
-    .download {
-
-      background:
-        #2563eb;
-    }
-
-
-    .download:hover {
-
-      background:
-        #1d4ed8;
-    }
-
-
-    .delete {
-
-      background:
-        #ef4444;
-    }
-
-
-    .delete:hover {
-
-      background:
-        #dc2626;
-    }
-
-
-    .empty {
-
-      padding:
-        30px 10px;
-
-      text-align:
-        center;
-
-      color:
-        #9ca3af;
-
-      font-size:
-        14px;
-    }
-
-
-    /* =========================
-       모바일
-    ========================= */
-
-    @media (
-      max-width: 600px
-    ) {
-
-      .container {
-
-        width:
-          calc(100% - 22px);
-
-        padding-top:
-          40px;
-      }
-
-
-      .card {
-
-        padding:
-          20px;
-
-        border-radius:
-          18px;
-      }
-
-
-      h1 {
-
-        font-size:
-          26px;
-      }
-
-
-      .drop-area {
-
-        padding:
-          30px 15px;
-      }
-
-
-      .admin-file {
-
-        align-items:
-          flex-start;
-
-        flex-direction:
-          column;
-      }
-
-
-      .admin-actions {
-
-        width:
-          100%;
-      }
-
-
-      .small-button {
-
-        flex:
-          1;
-      }
-
-
-      .admin-header {
-
-        align-items:
-          flex-start;
-      }
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>파일 업로드</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans KR",
+    sans-serif;
+  background: #f5f7fb;
+  color: #202124;
+}
+
+.container {
+  width: min(720px, calc(100% - 32px));
+  margin: 60px auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.drop-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 230px;
+  padding: 30px;
+  border: 2px dashed #d7dce5;
+  border-radius: 16px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+  text-align: center;
+}
+
+.drop-area:hover {
+  border-color: #7c3aed;
+  background: #faf7ff;
+}
+
+.drop-area.dragover {
+  border-color: #7c3aed;
+  background: #f3edff;
+  transform: scale(1.01);
+}
+
+.drop-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.drop-description {
+  color: #777f8c;
+  font-size: 14px;
+}
+
+#fileInput {
+  display: none;
+}
+
+.selected-file {
+  display: none;
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #f5f3ff;
+  border-radius: 12px;
+  color: #4c1d95;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.selected-file.show {
+  display: block;
+}
+
+.button {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 16px;
+  background: #7c3aed;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+
+.button:hover {
+  background: #6d28d9;
+}
+
+.button:active {
+  transform: scale(0.99);
+}
+
+.button:disabled {
+  background: #c4b5fd;
+  cursor: not-allowed;
+}
+
+#progressBox {
+  display: none;
+  margin-top: 22px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+progress {
+  width: 100%;
+  height: 10px;
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+progress::-webkit-progress-value {
+  background: #7c3aed;
+  border-radius: 999px;
+}
+
+progress::-moz-progress-bar {
+  background: #7c3aed;
+  border-radius: 999px;
+}
+
+.speed {
+  margin-top: 8px;
+  text-align: right;
+  color: #7b8190;
+  font-size: 12px;
+}
+
+.message {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-section {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.admin-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.admin-button:hover {
+  color: #7c3aed;
+}
+
+#adminPanel {
+  display: none;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.admin-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.admin-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.logout-button {
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+  padding: 9px 13px;
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.logout-button:hover {
+  background: #f9fafb;
+}
+
+.admin-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid #edf0f4;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.admin-file-info {
+  min-width: 0;
+}
+
+.admin-file-name {
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.admin-file-size {
+  margin-top: 4px;
+  color: #8a919e;
+  font-size: 12px;
+}
+
+.admin-file-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.download-button,
+.delete-button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.download-button {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.download-button:hover {
+  background: #ddd6fe;
+}
+
+.delete-button {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.delete-button:hover {
+  background: #fee2e2;
+}
+
+.empty-files {
+  padding: 28px 10px;
+  text-align: center;
+  color: #8a919e;
+  font-size: 14px;
+}
+
+.success {
+  color: #059669;
+}
+
+.error {
+  color: #dc2626;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: min(100% - 20px, 720px);
+    margin: 30px auto;
+  }
+
+  .header h1 {
+    font-size: 27px;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .drop-area {
+    min-height: 200px;
+  }
+
+  .admin-file {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-file-actions {
+    width: 100%;
+  }
+
+  .download-button,
+  .delete-button {
+    flex: 1;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+  }
+}
+</style>
 </head>
-
 
 <body>
 
-
 <div class="container">
 
-
-  <!-- =========================
-       헤더
-  ========================== -->
-
   <div class="header">
-
-    <div class="logo">
-      ↑
-    </div>
-
-    <h1>
-      파일 업로드
-    </h1>
-
+    <h1>파일 업로드</h1>
     <p class="subtitle">
       파일을 선택하거나 끌어다 놓아 업로드하세요.
     </p>
-
   </div>
 
-
-  <!-- =========================
-       업로드 카드
-  ========================== -->
-
+  <!-- 업로드 카드 -->
   <div class="card">
 
-
-    <label
-      id="dropArea"
-      class="drop-area"
-      for="fileInput">
-
-
-      <div class="upload-icon">
-        ↑
-      </div>
-
-
+    <label id="dropArea" class="drop-area" for="fileInput">
       <div class="drop-title">
-
         파일을 선택하세요
-
       </div>
-
 
       <div class="drop-description">
-
         클릭하거나 파일을 이곳으로 끌어다 놓으세요.
-
       </div>
-
-
     </label>
-
 
     <input
       type="file"
       id="fileInput"
     >
 
-
     <div
       id="selectedFile"
-      class="selected-file">
-    </div>
-
+      class="selected-file"
+    ></div>
 
     <button
       id="uploadButton"
-      class="button">
-
+      class="button"
+    >
       업로드
-
     </button>
 
+    <!-- 업로드 진행률 -->
+    <div id="progressBox">
 
-    <!-- 진행률 -->
-
-    <div
-      id="progressBox">
-
-
-      <div
-        class="progress-header">
-
-        <span>
-          업로드 중
-        </span>
-
-
-        <span
-          id="progressText">
-
-          0%
-
-        </span>
-
+      <div class="progress-header">
+        <span>업로드 중</span>
+        <span id="progressText">0%</span>
       </div>
-
 
       <progress
         id="progress"
         value="0"
-        max="100">
-      </progress>
-
+        max="100"
+      ></progress>
 
       <div
         id="speedText"
-        class="speed">
-
+        class="speed"
+      >
         -
-
       </div>
 
-
     </div>
-
 
     <div
       id="uploadMessage"
-      class="message">
-    </div>
-
+      class="message"
+    ></div>
 
   </div>
 
 
-  <!-- =========================
-       관리자 버튼
-  ========================== -->
-
-  <div
-    class="admin-section">
-
-
+  <!-- 관리자 버튼 -->
+  <div class="admin-section">
     <button
       id="adminButton"
-      class="admin-button">
-
+      class="admin-button"
+    >
       관리자 모드
-
     </button>
-
-
   </div>
-
 
   <div
     id="adminMessage"
-    class="message">
-  </div>
+    class="message"
+  ></div>
 
 
-  <!-- =========================
-       관리자 패널
-  ========================== -->
-
+  <!-- 관리자 패널 -->
   <div
     id="adminPanel"
-    class="card">
+    class="card"
+  >
 
-
-    <div
-      class="admin-header">
-
+    <div class="admin-header">
 
       <div>
-
-        <div
-          class="admin-title">
-
+        <div class="admin-title">
           관리자 파일 관리
-
         </div>
 
-
-        <div
-          class="admin-badge">
-
+        <div class="admin-badge">
           관리자 인증됨
-
         </div>
-
       </div>
-
 
       <button
         id="logoutButton"
-        class="logout-button">
-
+        class="logout-button"
+      >
         로그아웃
-
       </button>
 
-
     </div>
 
-
-    <div
-      id="adminFiles">
-
+    <div id="adminFiles">
       불러오는 중...
-
     </div>
-
 
   </div>
-
 
 </div>
 
 
 <script>
 
+const API = "https://files.hjcone.workers.dev";
 
-/* ==================================================
-   API
-================================================== */
-
-const API =
-  "https://files.hjcone.workers.dev";
+let selectedFileObject = null;
+let adminPassword = sessionStorage.getItem("adminPassword") || "";
 
 
-/* ==================================================
-   DOM
-================================================== */
+/* =========================
+   요소
+========================= */
 
 const fileInput =
-  document.getElementById(
-    "fileInput"
-  );
-
+  document.getElementById("fileInput");
 
 const dropArea =
-  document.getElementById(
-    "dropArea"
-  );
+  document.getElementById("dropArea");
+
+const selectedFile =
+  document.getElementById("selectedFile");
+
+const uploadButton =
+  document.getElementById("uploadButton");
+
+const progressBox =
+  document.getElementById("progressBox");
+
+const progress =
+  document.getElementById("progress");
+
+const progressText =
+  document.getElementById("progressText");
+
+const speedText =
+  document.getElementById("speedText");
+
+const uploadMessage =
+  document.getElementById("uploadMessage");
+
+const adminButton =
+  document.getElementById("adminButton");
+
+const adminMessage =
+  document.getElementById("adminMessage");
+
+const adminPanel =
+  document.getElementById("adminPanel");
+
+const adminFiles =
+  document.getElementById("adminFiles");
+
+const logoutButton =
+  document.getElementById("logoutButton");
 
 
-/* ==================================================
+/* =========================
    메시지
-================================================== */
+========================= */
 
-function showMessage(
-  element,
-  message,
-  type
-) {
+function showMessage(element, message, type = "") {
 
-  element.textContent =
-    message;
+  element.textContent = message;
 
-  element.className =
-    "message " + type;
+  element.className = "message";
 
-  element.style.display =
-    "block";
+  if (type) {
+    element.classList.add(type);
+  }
 }
 
 
-function hideMessage(
-  element
-) {
+function hideMessage(element) {
 
-  element.style.display =
-    "none";
+  element.textContent = "";
+  element.className = "message";
+
 }
 
 
-/* ==================================================
+/* =========================
    파일 크기
-================================================== */
+========================= */
 
-function formatSize(
-  bytes
-) {
+function formatSize(bytes) {
 
   if (!bytes) {
     return "0 B";
   }
-
 
   const units = [
     "B",
@@ -1255,362 +598,176 @@ function formatSize(
     "TB"
   ];
 
+  const index =
+    Math.floor(
+      Math.log(bytes) / Math.log(1024)
+    );
 
-  let size =
-    bytes;
+  const size =
+    bytes / Math.pow(1024, index);
 
-
-  let index =
-    0;
-
-
-  while (
-    size >= 1024 &&
-    index <
-      units.length - 1
-  ) {
-
-    size /=
-      1024;
-
-    index++;
-  }
-
-
-  return (
-    size.toFixed(
-      index === 0
-        ? 0
-        : 1
-    )
-    +
-    " "
-    +
-    units[index]
-  );
+  return `${size.toFixed(index === 0 ? 0 : 2)} ${units[index]}`;
 }
 
 
-/* ==================================================
-   파일 선택 처리
-================================================== */
+/* =========================
+   파일 선택
+========================= */
 
-function handleFile(
-  file
-) {
+function handleFile(file) {
 
   if (!file) {
+    selectedFileObject = null;
+
+    selectedFile.classList.remove("show");
+    selectedFile.textContent = "";
+
     return;
   }
 
+  selectedFileObject = file;
 
-  const selected =
-    document.getElementById(
-      "selectedFile"
-    );
-
-
-  selected.textContent =
+  selectedFile.textContent =
     `선택된 파일 · ${file.name} · ${formatSize(file.size)}`;
 
+  selectedFile.classList.add("show");
 
-  selected.style.display =
-    "block";
-
-
-  hideMessage(
-    document.getElementById(
-      "uploadMessage"
-    )
-  );
+  hideMessage(uploadMessage);
 }
 
 
-/* ==================================================
-   일반 파일 선택
-================================================== */
+/* =========================
+   파일 input
+========================= */
 
 fileInput.addEventListener(
   "change",
-  function() {
+  () => {
 
     const file =
       fileInput.files[0];
 
+    handleFile(file);
 
-    if (file) {
-
-      handleFile(
-        file
-      );
-    }
   }
 );
 
 
-/* ==================================================
+/* =========================
    드래그 앤 드롭
-================================================== */
+========================= */
 
-
-/*
- * 드래그가 영역 안으로 들어왔을 때
- */
 dropArea.addEventListener(
   "dragenter",
-  function(event) {
+  (event) => {
 
     event.preventDefault();
 
-    event.stopPropagation();
+    dropArea.classList.add("dragover");
 
-    dropArea.classList.add(
-      "dragover"
-    );
   }
 );
 
-
-/*
- * 드래그 중
- */
 dropArea.addEventListener(
   "dragover",
-  function(event) {
+  (event) => {
 
     event.preventDefault();
 
-    event.stopPropagation();
+    dropArea.classList.add("dragover");
 
-    dropArea.classList.add(
-      "dragover"
-    );
   }
 );
 
-
-/*
- * 드래그 영역 밖으로 나갔을 때
- */
 dropArea.addEventListener(
   "dragleave",
-  function(event) {
+  (event) => {
 
     event.preventDefault();
 
-    event.stopPropagation();
+    dropArea.classList.remove("dragover");
 
-    /*
-     * 실제 영역 밖으로 나간 경우에만 제거
-     */
-    if (
-      event.target ===
-      dropArea
-    ) {
-
-      dropArea.classList.remove(
-        "dragover"
-      );
-    }
   }
 );
 
-
-/*
- * 파일을 놓았을 때
- */
 dropArea.addEventListener(
   "drop",
-  function(event) {
+  (event) => {
 
     event.preventDefault();
 
-    event.stopPropagation();
+    dropArea.classList.remove("dragover");
 
+    const file =
+      event.dataTransfer.files[0];
 
-    dropArea.classList.remove(
-      "dragover"
-    );
-
-
-    const files =
-      event.dataTransfer.files;
-
-
-    if (
-      !files ||
-      files.length === 0
-    ) {
+    if (!file) {
       return;
     }
 
-
-    /*
-     * 첫 번째 파일만 사용
-     */
-    const file =
-      files[0];
-
-
-    /*
-     * input에도 넣어줌
-     */
     try {
 
       const dataTransfer =
         new DataTransfer();
 
-      dataTransfer.items.add(
-        file
-      );
+      dataTransfer.items.add(file);
 
       fileInput.files =
         dataTransfer.files;
 
-    } catch (_) {
-
-      /*
-       * 일부 오래된 브라우저에서는
-       * input.files 설정을 지원하지 않을 수 있음
-       */
+    } catch (error) {
+      // 일부 브라우저에서는 input.files 설정이 제한될 수 있음
     }
 
+    handleFile(file);
 
-    handleFile(
-      file
-    );
   }
 );
 
 
-/* ==================================================
+/* =========================
    업로드
-================================================== */
-
-document
-  .getElementById(
-    "uploadButton"
-  )
-  .addEventListener(
-    "click",
-    uploadFile
-  );
-
+========================= */
 
 function uploadFile() {
 
-
-  const file =
-    fileInput.files[0];
-
-
-  const button =
-    document.getElementById(
-      "uploadButton"
-    );
-
-
-  const progressBox =
-    document.getElementById(
-      "progressBox"
-    );
-
-
-  const progress =
-    document.getElementById(
-      "progress"
-    );
-
-
-  const progressText =
-    document.getElementById(
-      "progressText"
-    );
-
-
-  const speedText =
-    document.getElementById(
-      "speedText"
-    );
-
-
-  const message =
-    document.getElementById(
-      "uploadMessage"
-    );
-
-
-  /*
-   * 파일이 없는 경우
-   */
-  if (!file) {
+  if (!selectedFileObject) {
 
     showMessage(
-      message,
-
-      "먼저 업로드할 파일을 선택해주세요.",
-
+      uploadMessage,
+      "먼저 파일을 선택해주세요.",
       "error"
     );
 
     return;
   }
 
-
   /*
-   * 버튼 비활성화
+   * 업로드 시작 시 게이지 표시
    */
-  button.disabled =
-    true;
+  progressBox.style.display = "block";
+
+  progress.value = 0;
+  progressText.textContent = "0%";
+  speedText.textContent = "-";
+
+  hideMessage(uploadMessage);
+
+  uploadButton.disabled = true;
+  uploadButton.textContent = "업로드 중...";
 
 
-  button.textContent =
-    "업로드 중...";
-
-
-  progressBox.style.display =
-    "block";
-
-
-  progress.value =
-    0;
-
-
-  progressText.textContent =
-    "0%";
-
-
-  speedText.textContent =
-    "-";
-
-
-  hideMessage(
-    message
-  );
-
-
-  /*
-   * FormData
-   */
   const formData =
     new FormData();
 
-
   formData.append(
     "file",
-    file
+    selectedFileObject
   );
 
 
-  /*
-   * XMLHttpRequest
-   *
-   * fetch보다 업로드 진행률을
-   * 정확하게 표시할 수 있습니다.
-   */
   const xhr =
     new XMLHttpRequest();
-
 
   const startTime =
     Date.now();
@@ -1622,386 +779,226 @@ function uploadFile() {
   );
 
 
-  /*
-   * 업로드 진행률
-   */
+  /* =========================
+     업로드 진행률
+  ========================= */
+
   xhr.upload.onprogress =
-    function(event) {
+    (event) => {
 
-      if (
-        !event.lengthComputable
-      ) {
-
+      if (!event.lengthComputable) {
         return;
       }
 
-
       const percent =
         Math.round(
-          (
-            event.loaded /
-            event.total
-          ) *
-          100
+          (event.loaded / event.total) * 100
         );
 
-
-      progress.value =
-        percent;
-
+      progress.value = percent;
 
       progressText.textContent =
         `${percent}%`;
 
 
       const elapsed =
-        (
-          Date.now() -
-          startTime
-        ) / 1000;
+        (Date.now() - startTime) / 1000;
 
-
-      if (
-        elapsed > 0
-      ) {
+      if (elapsed > 0) {
 
         const speed =
-          event.loaded /
-          elapsed;
-
+          event.loaded / elapsed;
 
         speedText.textContent =
-          `속도 ${formatSize(speed)}/s`;
+          `${formatSize(speed)}/s`;
+
       }
+
     };
 
 
-  /*
-   * 업로드 완료
-   */
-  xhr.onload =
-    function() {
+  /* =========================
+     업로드 완료
+  ========================= */
+
+  xhr.onload = () => {
+
+    uploadButton.disabled = false;
+    uploadButton.textContent = "업로드";
 
 
-      button.disabled =
-        false;
+    let result;
 
+    try {
 
-      button.textContent =
-        "업로드";
+      result =
+        JSON.parse(xhr.responseText);
 
-
-      try {
-
-        const data =
-          JSON.parse(
-            xhr.responseText
-          );
-
-
-        if (
-          xhr.status < 200 ||
-          xhr.status >= 300 ||
-          !data.ok
-        ) {
-
-          throw new Error(
-            data.error ||
-            "업로드에 실패했습니다."
-          );
-        }
-
-
-        progress.value =
-          100;
-
-
-        progressText.textContent =
-          "100%";
-
-
-        showMessage(
-          message,
-
-          `${data.name} 업로드가 완료되었습니다.`,
-
-          "success"
-        );
-
-
-        /*
-         * 파일 선택 초기화
-         */
-        fileInput.value =
-          "";
-
-
-        document
-          .getElementById(
-            "selectedFile"
-          )
-          .style.display =
-          "none";
-
-
-        /*
-         * 관리자 로그인 중이면
-         * 관리자 목록 새로고침
-         */
-        if (
-          sessionStorage.getItem(
-            "adminPassword"
-          )
-        ) {
-
-          loadAdminFiles();
-        }
-
-
-      } catch (error) {
-
-        showMessage(
-          message,
-
-          error.message,
-
-          "error"
-        );
-      }
-    };
-
-
-  /*
-   * 네트워크 오류
-   */
-  xhr.onerror =
-    function() {
-
-
-      button.disabled =
-        false;
-
-
-      button.textContent =
-        "업로드";
-
+    } catch (error) {
 
       showMessage(
-        message,
-
-        "서버와 통신하지 못했습니다.",
-
+        uploadMessage,
+        "서버 응답을 처리하지 못했습니다.",
         "error"
       );
-    };
 
+      progressBox.style.display = "none";
 
-  /*
-   * 요청
-   */
-  xhr.send(
-    formData
-  );
-}
-
-
-/* ==================================================
-   관리자 로그인
-================================================== */
-
-document
-  .getElementById(
-    "adminButton"
-  )
-  .addEventListener(
-    "click",
-    adminLogin
-  );
-
-
-async function adminLogin() {
-
-
-  const password =
-    prompt(
-      "관리자 비밀번호를 입력하세요."
-    );
-
-
-  if (
-    password === null
-  ) {
-
-    return;
-  }
-
-
-  if (!password) {
-
-    showMessage(
-
-      document.getElementById(
-        "adminMessage"
-      ),
-
-      "비밀번호를 입력해주세요.",
-
-      "error"
-    );
-
-    return;
-  }
-
-
-  const message =
-    document.getElementById(
-      "adminMessage"
-    );
-
-
-  hideMessage(
-    message
-  );
-
-
-  try {
-
-
-    const response =
-      await fetch(
-
-        `${API}/admin/files`,
-
-        {
-
-          method:
-            "GET",
-
-          headers: {
-
-            "X-Admin-Password":
-              password
-          }
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok ||
-      !data.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "관리자 인증에 실패했습니다."
-      );
+      return;
     }
 
 
-    /*
-     * 관리자 비밀번호를
-     * 현재 브라우저 세션에만 저장
-     */
-    sessionStorage.setItem(
-      "adminPassword",
-      password
-    );
+    if (
+      xhr.status >= 200 &&
+      xhr.status < 300 &&
+      result.ok
+    ) {
+
+      showMessage(
+        uploadMessage,
+        "업로드가 완료되었습니다.",
+        "success"
+      );
 
 
-    /*
-     * 관리자 카드 표시
-     */
-    document
-      .getElementById(
-        "adminPanel"
-      )
-      .style.display =
-      "block";
+      /*
+       * 업로드 완료 후
+       * 게이지 전체 삭제
+       */
+      progressBox.style.display = "none";
 
+      progress.value = 0;
+      progressText.textContent = "0%";
+      speedText.textContent = "-";
+
+
+      /*
+       * 선택된 파일 초기화
+       */
+      fileInput.value = "";
+
+      selectedFileObject = null;
+
+      selectedFile.classList.remove("show");
+      selectedFile.textContent = "";
+
+
+      /*
+       * 관리자 모드라면
+       * 파일 목록 새로고침
+       */
+      if (adminPassword) {
+
+        loadAdminFiles();
+
+      }
+
+    } else {
+
+      showMessage(
+        uploadMessage,
+        result.error ||
+          "업로드에 실패했습니다.",
+        "error"
+      );
+
+    }
+
+  };
+
+
+  /* =========================
+     네트워크 오류
+  ========================= */
+
+  xhr.onerror = () => {
+
+    uploadButton.disabled = false;
+    uploadButton.textContent = "업로드";
+
+    progressBox.style.display = "none";
 
     showMessage(
-
-      message,
-
-      "관리자 인증이 완료되었습니다.",
-
-      "success"
-    );
-
-
-    /*
-     * 파일이 0개여도
-     * 관리자 카드가 표시됨
-     */
-    renderAdminFiles(
-      data.files
-    );
-
-
-  } catch (error) {
-
-
-    sessionStorage.removeItem(
-      "adminPassword"
-    );
-
-
-    showMessage(
-
-      message,
-
-      "관리자 로그인 실패: " +
-      error.message,
-
+      uploadMessage,
+      "업로드 중 네트워크 오류가 발생했습니다.",
       "error"
     );
 
+  };
 
-    console.error(
-      "ADMIN LOGIN ERROR:",
-      error
+
+  /* =========================
+     업로드 취소
+  ========================= */
+
+  xhr.onabort = () => {
+
+    uploadButton.disabled = false;
+    uploadButton.textContent = "업로드";
+
+    progressBox.style.display = "none";
+
+    showMessage(
+      uploadMessage,
+      "업로드가 취소되었습니다.",
+      "error"
     );
-  }
+
+  };
+
+
+  xhr.send(formData);
+
 }
 
 
-/* ==================================================
-   관리자 파일 목록 가져오기
-================================================== */
+uploadButton.addEventListener(
+  "click",
+  uploadFile
+);
 
-async function loadAdminFiles() {
 
+/* =========================
+   관리자 로그인
+========================= */
+
+async function adminLogin() {
 
   const password =
-    sessionStorage.getItem(
-      "adminPassword"
-    );
+    prompt("관리자 비밀번호를 입력하세요.");
 
+  if (password === null) {
+    return;
+  }
 
   if (!password) {
+
+    showMessage(
+      adminMessage,
+      "비밀번호를 입력해주세요.",
+      "error"
+    );
 
     return;
   }
 
 
-  try {
+  showMessage(
+    adminMessage,
+    "관리자 인증 중..."
+  );
 
+
+  try {
 
     const response =
       await fetch(
-
         `${API}/admin/files`,
-
         {
+          method: "GET",
 
           headers: {
-
-            "X-Admin-Password":
-              password
+            "X-Admin-Password": password
           }
         }
       );
@@ -2012,458 +1009,385 @@ async function loadAdminFiles() {
 
 
     if (
+      response.ok &&
+      data.ok
+    ) {
+
+      adminPassword = password;
+
+      sessionStorage.setItem(
+        "adminPassword",
+        password
+      );
+
+
+      adminPanel.style.display =
+        "block";
+
+      hideMessage(adminMessage);
+
+      renderAdminFiles(data.files || []);
+
+    } else {
+
+      showMessage(
+        adminMessage,
+        data.error ||
+          "관리자 인증에 실패했습니다.",
+        "error"
+      );
+
+    }
+
+  } catch (error) {
+
+    showMessage(
+      adminMessage,
+      "관리자 서버에 연결하지 못했습니다.",
+      "error"
+    );
+
+  }
+
+}
+
+
+adminButton.addEventListener(
+  "click",
+  adminLogin
+);
+
+
+/* =========================
+   관리자 파일 목록
+========================= */
+
+async function loadAdminFiles() {
+
+  if (!adminPassword) {
+    return;
+  }
+
+
+  adminFiles.innerHTML =
+    `<div class="empty-files">불러오는 중...</div>`;
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/files`,
+        {
+          method: "GET",
+
+          headers: {
+            "X-Admin-Password":
+              adminPassword
+          }
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      response.status === 401 ||
       !response.ok ||
       !data.ok
     ) {
-
 
       sessionStorage.removeItem(
         "adminPassword"
       );
 
+      adminPassword = "";
 
-      document
-        .getElementById(
-          "adminPanel"
-        )
-        .style.display =
+      adminPanel.style.display =
         "none";
 
-
-      throw new Error(
-        data.error ||
-        "관리자 인증이 만료되었습니다."
+      showMessage(
+        adminMessage,
+        "관리자 인증이 만료되었습니다.",
+        "error"
       );
+
+      return;
     }
 
 
     renderAdminFiles(
-      data.files
+      data.files || []
     );
-
 
   } catch (error) {
 
-    console.error(
-      "ADMIN FILE ERROR:",
-      error
-    );
+    adminFiles.innerHTML =
+      `<div class="empty-files">
+        파일 목록을 불러오지 못했습니다.
+      </div>`;
+
   }
+
 }
 
 
-/* ==================================================
+/* =========================
    관리자 파일 표시
-================================================== */
+========================= */
 
-function renderAdminFiles(
-  files
-) {
-
-
-  const container =
-    document.getElementById(
-      "adminFiles"
-    );
-
-
-  container.innerHTML =
-    "";
-
+function renderAdminFiles(files) {
 
   /*
-   * 파일이 없을 때도
-   * 관리자 카드 안에서 메시지 표시
+   * 파일이 하나도 없어도
+   * 관리자 카드 자체는 유지
    */
-  if (
-    !files ||
-    files.length === 0
-  ) {
 
+  if (!files.length) {
 
-    container.innerHTML = `
-
-      <div class="empty">
-
+    adminFiles.innerHTML =
+      `<div class="empty-files">
         현재 업로드된 파일이 없습니다.
-
-      </div>
-
-    `;
-
+      </div>`;
 
     return;
   }
 
 
-  /*
-   * 파일 목록
-   */
-  files.forEach(
-    function(file) {
+  const list =
+    document.createElement("div");
+
+  list.className =
+    "admin-file-list";
 
 
-      const row =
-        document.createElement(
-          "div"
-        );
+  files.forEach((file) => {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "admin-file";
 
 
-      row.className =
-        "admin-file";
+    const info =
+      document.createElement("div");
+
+    info.className =
+      "admin-file-info";
 
 
-      /*
-       * 파일 정보
-       */
-      const info =
-        document.createElement(
-          "div"
-        );
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "admin-file-name";
+
+    name.textContent =
+      file.name;
 
 
-      info.style.flex =
-        "1";
+    const size =
+      document.createElement("div");
+
+    size.className =
+      "admin-file-size";
+
+    size.textContent =
+      formatSize(file.size);
 
 
-      const name =
-        document.createElement(
-          "div"
-        );
+    info.appendChild(name);
+    info.appendChild(size);
 
 
-      name.className =
-        "admin-file-name";
+    const actions =
+      document.createElement("div");
+
+    actions.className =
+      "admin-file-actions";
 
 
-      name.textContent =
-        file.name;
+    const downloadButton =
+      document.createElement("button");
+
+    downloadButton.className =
+      "download-button";
+
+    downloadButton.textContent =
+      "다운로드";
 
 
-      const size =
-        document.createElement(
-          "div"
-        );
+    downloadButton.addEventListener(
+      "click",
+      () => downloadFile(file.name)
+    );
 
 
-      size.className =
-        "admin-file-size";
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.className =
+      "delete-button";
+
+    deleteButton.textContent =
+      "삭제";
 
 
-      size.textContent =
-        formatSize(
-          file.size
-        );
+    deleteButton.addEventListener(
+      "click",
+      () => deleteFile(file.name)
+    );
 
 
-      info.appendChild(
-        name
-      );
+    actions.appendChild(
+      downloadButton
+    );
+
+    actions.appendChild(
+      deleteButton
+    );
 
 
-      info.appendChild(
-        size
-      );
+    item.appendChild(info);
+    item.appendChild(actions);
+
+    list.appendChild(item);
+
+  });
 
 
-      /*
-       * 버튼
-       */
-      const actions =
-        document.createElement(
-          "div"
-        );
+  adminFiles.innerHTML = "";
 
+  adminFiles.appendChild(list);
 
-      actions.className =
-        "admin-actions";
-
-
-      /*
-       * 다운로드
-       */
-      const download =
-        document.createElement(
-          "button"
-        );
-
-
-      download.className =
-        "small-button download";
-
-
-      download.textContent =
-        "다운로드";
-
-
-      download.onclick =
-        function() {
-
-          downloadFile(
-            file.name
-          );
-        };
-
-
-      /*
-       * 삭제
-       */
-      const deleteButton =
-        document.createElement(
-          "button"
-        );
-
-
-      deleteButton.className =
-        "small-button delete";
-
-
-      deleteButton.textContent =
-        "삭제";
-
-
-      deleteButton.onclick =
-        function() {
-
-          deleteFile(
-            file.name
-          );
-        };
-
-
-      actions.appendChild(
-        download
-      );
-
-
-      actions.appendChild(
-        deleteButton
-      );
-
-
-      row.appendChild(
-        info
-      );
-
-
-      row.appendChild(
-        actions
-      );
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
 }
 
 
-/* ==================================================
+/* =========================
    관리자 다운로드
-================================================== */
+========================= */
 
-async function downloadFile(
-  filename
-) {
-
-
-  const password =
-    sessionStorage.getItem(
-      "adminPassword"
-    );
-
-
-  if (!password) {
-
-    return;
-  }
-
+async function downloadFile(filename) {
 
   try {
 
-
-    /*
-     * Worker에서 실제 파일을 가져옴
-     */
     const response =
       await fetch(
-
         `${API}/admin/download?name=${encodeURIComponent(filename)}`,
-
         {
-
-          method:
-            "GET",
+          method: "GET",
 
           headers: {
-
             "X-Admin-Password":
-              password
+              adminPassword
           }
         }
       );
 
 
-    if (
-      !response.ok
-    ) {
-
+    if (!response.ok) {
 
       let errorMessage =
         "다운로드에 실패했습니다.";
-
 
       try {
 
         const data =
           await response.json();
 
-
-        if (
-          data.error
-        ) {
-
+        if (data.error) {
           errorMessage =
             data.error;
         }
 
-      } catch (_) {}
+      } catch (error) {
+        // JSON이 아닐 경우 기본 메시지 사용
+      }
 
+      alert(errorMessage);
 
-      throw new Error(
-        errorMessage
-      );
+      return;
     }
 
 
-    /*
-     * 실제 파일 데이터를 Blob으로 변환
-     */
     const blob =
       await response.blob();
 
 
     /*
-     * 임시 다운로드 URL
+     * 새 창으로 열지 않고
+     * 브라우저 다운로드 실행
      */
+
     const blobUrl =
-      URL.createObjectURL(
-        blob
-      );
+      URL.createObjectURL(blob);
 
 
-    /*
-     * 브라우저 다운로드
-     */
     const link =
-      document.createElement(
-        "a"
-      );
-
+      document.createElement("a");
 
     link.href =
       blobUrl;
 
-
     link.download =
       filename;
 
-
-    link.style.display =
-      "none";
-
-
-    document.body.appendChild(
-      link
-    );
-
+    document.body.appendChild(link);
 
     link.click();
-
 
     link.remove();
 
 
-    /*
-     * 임시 URL 삭제
-     */
-    setTimeout(
-      function() {
+    setTimeout(() => {
 
-        URL.revokeObjectURL(
-          blobUrl
-        );
+      URL.revokeObjectURL(blobUrl);
 
-      },
-      1000
-    );
+    }, 1000);
 
 
   } catch (error) {
 
-
     alert(
-      "다운로드 실패: " +
-      error.message
+      "다운로드 중 오류가 발생했습니다."
     );
+
   }
+
 }
 
 
-/* ==================================================
+/* =========================
    관리자 삭제
-================================================== */
+========================= */
 
-async function deleteFile(
-  filename
-) {
-
-
-  const password =
-    sessionStorage.getItem(
-      "adminPassword"
-    );
-
-
-  if (!password) {
-
-    return;
-  }
-
+async function deleteFile(filename) {
 
   const confirmed =
     confirm(
-
       `"${filename}" 파일을 삭제하시겠습니까?`
-
     );
 
 
   if (!confirmed) {
-
     return;
   }
 
 
   try {
 
-
     const response =
       await fetch(
-
         `${API}/admin/delete?name=${encodeURIComponent(filename)}`,
-
         {
-
-          method:
-            "DELETE",
+          method: "DELETE",
 
           headers: {
-
             "X-Admin-Password":
-              password
+              adminPassword
           }
         }
       );
@@ -2474,81 +1398,83 @@ async function deleteFile(
 
 
     if (
-      !response.ok ||
-      !data.ok
+      response.ok &&
+      data.ok
     ) {
 
-      throw new Error(
+      await loadAdminFiles();
+
+    } else {
+
+      if (response.status === 401) {
+
+        sessionStorage.removeItem(
+          "adminPassword"
+        );
+
+        adminPassword = "";
+
+        adminPanel.style.display =
+          "none";
+
+      }
+
+
+      alert(
         data.error ||
-        "삭제에 실패했습니다."
+          "파일 삭제에 실패했습니다."
       );
+
     }
-
-
-    /*
-     * 삭제 후 목록 새로고침
-     *
-     * 파일이 0개가 되어도
-     * 관리자 카드는 그대로 유지됨
-     */
-    await loadAdminFiles();
-
 
   } catch (error) {
 
-
     alert(
-      "삭제 실패: " +
-      error.message
+      "삭제 중 오류가 발생했습니다."
     );
+
   }
+
 }
 
 
-/* ==================================================
-   관리자 로그아웃
-================================================== */
+/* =========================
+   로그아웃
+========================= */
 
-document
-  .getElementById(
-    "logoutButton"
-  )
-  .addEventListener(
-    "click",
-    function() {
+logoutButton.addEventListener(
+  "click",
+  () => {
 
+    adminPassword = "";
 
-      sessionStorage.removeItem(
-        "adminPassword"
-      );
+    sessionStorage.removeItem(
+      "adminPassword"
+    );
 
+    adminPanel.style.display =
+      "none";
 
-      document
-        .getElementById(
-          "adminPanel"
-        )
-        .style.display =
-        "none";
+    hideMessage(adminMessage);
+
+  }
+);
 
 
-      showMessage(
+/* =========================
+   새로고침 시 관리자 세션 확인
+========================= */
 
-        document.getElementById(
-          "adminMessage"
-        ),
+if (adminPassword) {
 
-        "관리자 모드에서 로그아웃했습니다.",
+  adminPanel.style.display =
+    "block";
 
-        "success"
-      );
+  loadAdminFiles();
 
-    }
-  );
-
+}
 
 </script>
 
-
 </body>
-
 </html>
