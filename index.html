@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
 
@@ -9,344 +8,267 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>서버 연결 테스트</title>
+  <title>Worker 연결 테스트</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      padding: 30px;
-
-      font-family:
-        Arial,
-        "Noto Sans KR",
-        sans-serif;
-
+      padding: 20px;
+      font-family: Arial, sans-serif;
       background: #f5f5f5;
       color: #222;
     }
 
     .container {
-      width: min(700px, 100%);
+      max-width: 700px;
       margin: 0 auto;
-    }
-
-    .card {
       background: white;
-      border-radius: 16px;
-
-      padding: 30px;
-
-      box-shadow:
-        0 5px 25px
-        rgba(0, 0, 0, 0.08);
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
       margin-top: 0;
     }
 
-    .status {
-      margin-top: 20px;
-
-      padding: 18px;
-
-      border-radius: 10px;
-
-      background: #eee;
-
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .success {
-      background: #e8f7ed;
-      color: #16803c;
-    }
-
-    .error {
-      background: #ffebeb;
-      color: #d32f2f;
-    }
-
-    .info {
-      margin-top: 15px;
-
-      padding: 15px;
-
-      background: #f5f5f5;
-
-      border-radius: 10px;
-
-      white-space: pre-wrap;
-      word-break: break-word;
-
-      font-size: 14px;
-    }
-
     button {
       width: 100%;
-
       padding: 14px;
-
-      margin-top: 15px;
-
+      margin-top: 10px;
       border: 0;
-      border-radius: 10px;
-
+      border-radius: 8px;
       background: #222;
       color: white;
-
       font-size: 16px;
-
       cursor: pointer;
     }
 
-    button:hover {
-      background: #444;
+    button:active {
+      transform: scale(0.99);
     }
 
+    pre {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 100px;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eef6ff;
+      border-radius: 8px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100px;
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
   </style>
-
 </head>
-
 
 <body>
 
   <div class="container">
 
-    <div class="card">
+    <h1>Cloudflare Worker 연결 테스트</h1>
 
-      <h1>서버 연결 테스트</h1>
+    <div class="info">
+      <strong>현재 페이지</strong><br>
+      <span id="pageUrl"></span>
+      <br><br>
 
-      <p>
-        Cloudflare Worker와 GitHub Pages의
-        연결 상태를 확인합니다.
-      </p>
+      <strong>현재 Origin</strong><br>
+      <span id="origin"></span>
+      <br><br>
 
-
-      <div
-        id="status"
-        class="status"
-      >
-        테스트 준비 중...
-      </div>
-
-
-      <div
-        id="info"
-        class="info"
-      >
-        진단 정보를 준비하고 있습니다.
-      </div>
-
-
-      <button
-        id="testButton"
-      >
-        다시 테스트
-      </button>
-
+      <strong>Worker 주소</strong><br>
+      <span id="workerUrl"></span>
     </div>
+
+    <button onclick="testNormalFetch()">
+      1. 일반 Fetch 테스트
+    </button>
+
+    <button onclick="testNoCors()">
+      2. no-cors Fetch 테스트
+    </button>
+
+    <button onclick="testIframe()">
+      3. 브라우저 직접 연결 테스트
+    </button>
+
+    <pre id="result">아직 테스트하지 않았습니다.</pre>
+
+    <iframe
+      id="testFrame"
+      style="display:none;"
+    ></iframe>
 
   </div>
 
+<script>
 
-  <script>
+const API = "https://files.hjcone.worker.dev";
 
-    const API =
-      "https://files.hjcone.worker.dev";
+const result = document.getElementById("result");
+const pageUrl = document.getElementById("pageUrl");
+const origin = document.getElementById("origin");
+const workerUrl = document.getElementById("workerUrl");
 
-
-    const status =
-      document.getElementById("status");
-
-
-    const info =
-      document.getElementById("info");
-
-
-    const testButton =
-      document.getElementById("testButton");
+pageUrl.textContent = window.location.href;
+origin.textContent = window.location.origin;
+workerUrl.textContent = API;
 
 
-    /*
-     * 테스트 1
-     *
-     * fetch()로 Worker의 /ping 요청
-     */
-    async function testFetch() {
+/*
+========================================
+1. 일반 Fetch 테스트
+========================================
+*/
 
-      status.className = "status";
+async function testNormalFetch() {
 
-      status.textContent =
-        "1단계: fetch 연결 테스트 중...";
+  result.textContent =
+    "1. 일반 Fetch 테스트 중...\n\n" +
+    API + "/ping";
 
+  try {
 
-      info.textContent =
-        "요청 주소:\n" +
-        API + "/ping";
-
-
-      try {
-
-        const response =
-          await fetch(
-            API + "/ping",
-            {
-              method: "GET",
-              cache: "no-store"
-            }
-          );
-
-
-        const text =
-          await response.text();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "HTTP " +
-            response.status +
-            "\n\n" +
-            text
-          );
-
-        }
-
-
-        status.className =
-          "status success";
-
-
-        status.textContent =
-          "1단계 성공\n\n" +
-          "fetch()로 Worker에 연결되었습니다.";
-
-
-        info.textContent =
-          "서버 응답:\n" +
-          text +
-          "\n\n" +
-          "현재 페이지:\n" +
-          window.location.href +
-          "\n\n" +
-          "현재 Origin:\n" +
-          window.location.origin;
-
-
-        return true;
-
-
-      } catch (error) {
-
-        status.className =
-          "status error";
-
-
-        status.textContent =
-          "1단계 실패\n\n" +
-          "Failed to fetch";
-
-
-        info.textContent =
-          "오류 이름:\n" +
-          (error.name || "없음") +
-
-          "\n\n" +
-
-          "오류 메시지:\n" +
-          (error.message || "없음") +
-
-          "\n\n" +
-
-          "요청 주소:\n" +
-          API + "/ping" +
-
-          "\n\n" +
-
-          "현재 페이지:\n" +
-          window.location.href +
-
-          "\n\n" +
-
-          "현재 Origin:\n" +
-          window.location.origin;
-
-
-        return false;
-
+    const response = await fetch(
+      API + "/ping?test=" + Date.now(),
+      {
+        method: "GET",
+        cache: "no-store"
       }
-
-    }
-
-
-    /*
-     * 테스트 2
-     *
-     * fetch가 실패해도 브라우저 자체가
-     * Worker 주소에 접근 가능한지 확인
-     */
-    function testImageRequest() {
-
-      const image =
-        new Image();
-
-
-      image.onload = function () {
-
-        info.textContent +=
-          "\n\n" +
-          "2단계: 브라우저 요청 성공";
-
-
-      };
-
-
-      image.onerror = function () {
-
-        info.textContent +=
-          "\n\n" +
-          "2단계: 브라우저 요청 실패";
-
-      };
-
-
-      image.src =
-        API +
-        "/ping?test=" +
-        Date.now();
-
-    }
-
-
-    /*
-     * 전체 테스트
-     */
-    async function runTest() {
-
-      await testFetch();
-
-      testImageRequest();
-
-    }
-
-
-    testButton.addEventListener(
-      "click",
-      runTest
     );
 
+    const text = await response.text();
 
-    runTest();
+    result.textContent =
+      "1. 일반 Fetch 테스트 성공\n\n" +
+      "status: " + response.status + "\n" +
+      "type: " + response.type + "\n" +
+      "url: " + response.url + "\n\n" +
+      "응답 내용:\n" +
+      text;
 
-  </script>
+  } catch (error) {
+
+    result.textContent =
+      "1. 일반 Fetch 테스트 실패\n\n" +
+      "오류 이름: " + error.name + "\n" +
+      "오류 메시지: " + error.message + "\n\n" +
+      "요청 주소:\n" +
+      API + "/ping";
+
+  }
+
+}
+
+
+/*
+========================================
+2. no-cors 테스트
+========================================
+*/
+
+async function testNoCors() {
+
+  result.textContent =
+    "2. no-cors Fetch 테스트 중...\n\n" +
+    "잠시 기다려 주세요.";
+
+  try {
+
+    const response = await fetch(
+      API + "/ping?nocors=" + Date.now(),
+      {
+        method: "GET",
+        mode: "no-cors",
+        cache: "no-store"
+      }
+    );
+
+    result.textContent =
+      "2. no-cors Fetch 테스트 성공\n\n" +
+      "response.type: " + response.type + "\n" +
+      "response.status: " + response.status + "\n\n" +
+      "이 결과가 나오면 브라우저에서\n" +
+      "Cloudflare Worker까지 연결된 것입니다.\n\n" +
+      "no-cors에서는 보안상 응답 내용을 읽을 수 없으므로\n" +
+      "type이 opaque로 나오는 것이 정상입니다.";
+
+  } catch (error) {
+
+    result.textContent =
+      "2. no-cors Fetch 테스트 실패\n\n" +
+      "오류 이름: " + error.name + "\n" +
+      "오류 메시지: " + error.message + "\n\n" +
+      "이 경우 CORS 이전의 네트워크 연결 문제일\n" +
+      "가능성이 있습니다.";
+
+  }
+
+}
+
+
+/*
+========================================
+3. iframe 테스트
+========================================
+*/
+
+function testIframe() {
+
+  result.textContent =
+    "3. 브라우저 직접 연결 테스트 중...\n\n" +
+    "잠시 기다려 주세요.";
+
+  const frame = document.getElementById("testFrame");
+
+  frame.style.display = "block";
+
+  frame.onload = function() {
+
+    result.textContent =
+      "3. 브라우저 직접 연결 테스트 성공\n\n" +
+      "Cloudflare Worker의 /ping 페이지가\n" +
+      "브라우저에서 로드되었습니다.\n\n" +
+      "Worker 주소:\n" +
+      API + "/ping";
+
+  };
+
+  frame.onerror = function() {
+
+    result.textContent =
+      "3. 브라우저 직접 연결 테스트 실패\n\n" +
+      "Worker 페이지를 로드하지 못했습니다.";
+
+  };
+
+  frame.src =
+    API + "/ping?iframe=" + Date.now();
+
+}
+
+</script>
 
 </body>
-
 </html>
