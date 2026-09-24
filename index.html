@@ -28,12 +28,13 @@
         sans-serif;
 
       background: #f5f5f5;
+
       color: #222;
     }
 
     .container {
       width: 100%;
-      max-width: 650px;
+      max-width: 700px;
 
       margin: 40px auto;
 
@@ -96,6 +97,7 @@
 
     button:disabled {
       background: #999;
+
       cursor: not-allowed;
     }
 
@@ -170,16 +172,10 @@
       margin-top: 30px;
     }
 
-    .files h2 {
-      font-size: 20px;
-    }
-
     .file-item {
       display: flex;
 
       align-items: center;
-
-      justify-content: space-between;
 
       gap: 12px;
 
@@ -193,8 +189,9 @@
     }
 
     .file-info {
-      min-width: 0;
       flex: 1;
+
+      min-width: 0;
     }
 
     .file-name {
@@ -211,18 +208,100 @@
       color: #777;
     }
 
-    .delete-button {
-      width: auto;
+    .admin-button {
+      background: #555;
 
-      min-width: 70px;
+      margin-top: 25px;
+    }
+
+    .admin-panel {
+      display: none;
+
+      margin-top: 30px;
+
+      padding-top: 25px;
+
+      border-top: 2px solid #ddd;
+    }
+
+    .admin-title {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+    }
+
+    .admin-title h2 {
+      margin: 0;
+    }
+
+    .logout-button {
+      width: auto;
 
       margin: 0;
 
       padding: 8px 12px;
 
-      background: #c62828;
+      background: #777;
 
       font-size: 13px;
+    }
+
+    .admin-file-item {
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 12px;
+
+      margin-top: 8px;
+
+      background: #f3f3f3;
+
+      border-radius: 10px;
+    }
+
+    .admin-file-info {
+      flex: 1;
+
+      min-width: 0;
+    }
+
+    .admin-file-name {
+      font-weight: bold;
+
+      word-break: break-all;
+    }
+
+    .admin-file-size {
+      margin-top: 4px;
+
+      font-size: 12px;
+
+      color: #777;
+    }
+
+    .admin-action {
+      width: auto;
+
+      margin: 0;
+
+      padding: 8px 12px;
+
+      font-size: 13px;
+    }
+
+    .download-button {
+      background: #333;
+    }
+
+    .delete-button {
+      background: #c62828;
     }
 
     .empty {
@@ -231,12 +310,6 @@
       text-align: center;
 
       color: #777;
-    }
-
-    .refresh-button {
-      background: #555;
-
-      margin-top: 10px;
     }
 
   </style>
@@ -308,7 +381,6 @@
 
     </div>
 
-
     <div
       id="progressText"
       class="progress-text"
@@ -320,7 +392,8 @@
 
 
   <!-- ============================= -->
-  <!-- 파일 목록 -->
+  <!-- 일반 파일 목록 -->
+  <!-- 삭제 버튼 없음 -->
   <!-- ============================= -->
 
   <div class="files">
@@ -331,12 +404,50 @@
       불러오는 중...
     </div>
 
-    <button
-      class="refresh-button"
-      onclick="loadFiles()"
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- 관리자 버튼 -->
+  <!-- ============================= -->
+
+  <button
+    class="admin-button"
+    onclick="loginAdmin()"
+  >
+    관리자 모드
+  </button>
+
+
+  <!-- ============================= -->
+  <!-- 관리자 패널 -->
+  <!-- ============================= -->
+
+  <div
+    id="adminPanel"
+    class="admin-panel"
+  >
+
+    <div class="admin-title">
+
+      <h2>관리자 모드</h2>
+
+      <button
+        class="logout-button"
+        onclick="logoutAdmin()"
+      >
+        로그아웃
+      </button>
+
+    </div>
+
+
+    <div
+      id="adminFileList"
+      style="margin-top:20px;"
     >
-      파일 목록 새로고침
-    </button>
+      불러오는 중...
+    </div>
 
   </div>
 
@@ -353,25 +464,49 @@ const fileInput =
   document.getElementById("file");
 
 const selectedFile =
-  document.getElementById("selectedFile");
+  document.getElementById(
+    "selectedFile"
+  );
 
 const uploadButton =
-  document.getElementById("uploadButton");
+  document.getElementById(
+    "uploadButton"
+  );
 
 const progressArea =
-  document.getElementById("progressArea");
+  document.getElementById(
+    "progressArea"
+  );
 
 const progressFill =
-  document.getElementById("progressFill");
+  document.getElementById(
+    "progressFill"
+  );
 
 const progressText =
-  document.getElementById("progressText");
+  document.getElementById(
+    "progressText"
+  );
 
 const message =
-  document.getElementById("message");
+  document.getElementById(
+    "message"
+  );
 
 const fileList =
-  document.getElementById("fileList");
+  document.getElementById(
+    "fileList"
+  );
+
+const adminPanel =
+  document.getElementById(
+    "adminPanel"
+  );
+
+const adminFileList =
+  document.getElementById(
+    "adminFileList"
+  );
 
 
 // ====================================
@@ -454,17 +589,9 @@ function uploadFile() {
     "0%";
 
 
-  progressText.textContent =
-    "업로드 준비 중...";
-
-
   const startTime =
     Date.now();
 
-
-  // ==================================
-  // 실제 업로드 진행률
-  // ==================================
 
   xhr.upload.addEventListener(
     "progress",
@@ -476,16 +603,21 @@ function uploadFile() {
 
 
       const percent =
-        (event.loaded / event.total) * 100;
+        event.loaded /
+        event.total *
+        100;
 
 
       const elapsed =
-        (Date.now() - startTime) / 1000;
+        (Date.now() -
+          startTime) /
+        1000;
 
 
       const speed =
         elapsed > 0
-          ? event.loaded / elapsed
+          ? event.loaded /
+            elapsed
           : 0;
 
 
@@ -501,10 +633,6 @@ function uploadFile() {
     }
   );
 
-
-  // ==================================
-  // 업로드 완료
-  // ==================================
 
   xhr.addEventListener(
     "load",
@@ -522,7 +650,9 @@ function uploadFile() {
 
       try {
         data =
-          JSON.parse(xhr.responseText);
+          JSON.parse(
+            xhr.responseText
+          );
       } catch {
         data = null;
       }
@@ -537,10 +667,8 @@ function uploadFile() {
         progressFill.style.width =
           "100%";
 
-
         progressText.innerHTML =
-          `100%<br>` +
-          `업로드 완료`;
+          "100%<br>업로드 완료";
 
 
         showMessage(
@@ -558,6 +686,13 @@ function uploadFile() {
 
         loadFiles();
 
+        if (
+          adminPanel.style.display ===
+          "block"
+        ) {
+          loadAdminFiles();
+        }
+
       } else {
 
         showMessage(
@@ -569,10 +704,6 @@ function uploadFile() {
     }
   );
 
-
-  // ==================================
-  // 네트워크 오류
-  // ==================================
 
   xhr.addEventListener(
     "error",
@@ -593,29 +724,6 @@ function uploadFile() {
   );
 
 
-  // ==================================
-  // 업로드 취소
-  // ==================================
-
-  xhr.addEventListener(
-    "abort",
-    function () {
-
-      uploadButton.disabled =
-        false;
-
-      uploadButton.textContent =
-        "파일 업로드";
-
-
-      showMessage(
-        "업로드가 취소되었습니다.",
-        false
-      );
-    }
-  );
-
-
   xhr.open(
     "POST",
     `${API}/upload`,
@@ -628,7 +736,8 @@ function uploadFile() {
 
 
 // ====================================
-// 파일 목록
+// 일반 사용자 파일 목록
+// 삭제 없음
 // ====================================
 
 async function loadFiles() {
@@ -665,7 +774,7 @@ async function loadFiles() {
     }
 
 
-    renderFiles(
+    renderPublicFiles(
       data.files || []
     );
 
@@ -673,18 +782,17 @@ async function loadFiles() {
 
     fileList.innerHTML =
       `<div class="empty">
-        파일 목록을 불러오지 못했습니다.<br>
-        ${escapeHtml(error.message)}
+        파일 목록을 불러오지 못했습니다.
       </div>`;
   }
 }
 
 
 // ====================================
-// 파일 목록 표시
+// 일반 사용자 목록 표시
 // ====================================
 
-function renderFiles(files) {
+function renderPublicFiles(files) {
 
   if (!files.length) {
 
@@ -705,21 +813,27 @@ function renderFiles(files) {
     function (file) {
 
       const item =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       item.className =
         "file-item";
 
 
       const info =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       info.className =
         "file-info";
 
 
       const name =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       name.className =
         "file-name";
@@ -729,7 +843,9 @@ function renderFiles(files) {
 
 
       const size =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       size.className =
         "file-size";
@@ -739,31 +855,10 @@ function renderFiles(files) {
 
 
       info.appendChild(name);
+
       info.appendChild(size);
 
-
-      const deleteButton =
-        document.createElement("button");
-
-      deleteButton.className =
-        "delete-button";
-
-      deleteButton.textContent =
-        "삭제";
-
-
-      deleteButton.onclick =
-        function () {
-
-          deleteFile(
-            file.name
-          );
-        };
-
-
       item.appendChild(info);
-      item.appendChild(deleteButton);
-
 
       fileList.appendChild(item);
     }
@@ -772,20 +867,287 @@ function renderFiles(files) {
 
 
 // ====================================
-// 파일 삭제
+// 관리자 로그인
 // ====================================
 
-async function deleteFile(
-  filename
-) {
+async function loginAdmin() {
 
-  const confirmed =
-    confirm(
-      `"${filename}" 파일을 삭제하시겠습니까?`
+  const password =
+    prompt(
+      "관리자 비밀번호를 입력하세요."
     );
 
 
-  if (!confirmed) {
+  if (!password) {
+    return;
+  }
+
+
+  const response =
+    await fetch(
+      `${API}/admin/files`,
+      {
+        method: "GET",
+
+        headers: {
+          "X-Admin-Password":
+            password
+        },
+
+        cache: "no-store"
+      }
+    );
+
+
+  let data = null;
+
+
+  try {
+    data =
+      await response.json();
+  } catch {
+    data = null;
+  }
+
+
+  if (
+    !response.ok ||
+    !data?.success
+  ) {
+
+    alert(
+      "관리자 인증에 실패했습니다."
+    );
+
+    return;
+  }
+
+
+  sessionStorage.setItem(
+    "adminPassword",
+    password
+  );
+
+
+  adminPanel.style.display =
+    "block";
+
+
+  renderAdminFiles(
+    data.files || []
+  );
+}
+
+
+// ====================================
+// 관리자 파일 목록
+// ====================================
+
+async function loadAdminFiles() {
+
+  const password =
+    sessionStorage.getItem(
+      "adminPassword"
+    );
+
+
+  if (!password) {
+    return;
+  }
+
+
+  adminFileList.textContent =
+    "불러오는 중...";
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/files`,
+        {
+          method: "GET",
+
+          headers: {
+            "X-Admin-Password":
+              password
+          },
+
+          cache: "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+
+      logoutAdmin();
+
+      return;
+    }
+
+
+    renderAdminFiles(
+      data.files || []
+    );
+
+  } catch {
+
+    adminFileList.innerHTML =
+      `<div class="empty">
+        관리자 파일 목록을 불러오지 못했습니다.
+      </div>`;
+  }
+}
+
+
+// ====================================
+// 관리자 파일 표시
+// ====================================
+
+function renderAdminFiles(files) {
+
+  if (!files.length) {
+
+    adminFileList.innerHTML =
+      `<div class="empty">
+        업로드된 파일이 없습니다.
+      </div>`;
+
+    return;
+  }
+
+
+  adminFileList.innerHTML =
+    "";
+
+
+  files.forEach(
+    function (file) {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "admin-file-item";
+
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+      info.className =
+        "admin-file-info";
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+      name.className =
+        "admin-file-name";
+
+      name.textContent =
+        file.name;
+
+
+      const size =
+        document.createElement(
+          "div"
+        );
+
+      size.className =
+        "admin-file-size";
+
+      size.textContent =
+        formatBytes(file.size);
+
+
+      info.appendChild(name);
+
+      info.appendChild(size);
+
+
+      const download =
+        document.createElement(
+          "button"
+        );
+
+      download.className =
+        "admin-action download-button";
+
+      download.textContent =
+        "다운로드";
+
+
+      download.onclick =
+        function () {
+
+          downloadFile(
+            file.name
+          );
+        };
+
+
+      const deleteButton =
+        document.createElement(
+          "button"
+        );
+
+      deleteButton.className =
+        "admin-action delete-button";
+
+      deleteButton.textContent =
+        "삭제";
+
+
+      deleteButton.onclick =
+        function () {
+
+          adminDeleteFile(
+            file.name
+          );
+        };
+
+
+      item.appendChild(info);
+
+      item.appendChild(download);
+
+      item.appendChild(deleteButton);
+
+
+      adminFileList.appendChild(item);
+    }
+  );
+}
+
+
+// ====================================
+// 관리자 다운로드
+// ====================================
+
+async function downloadFile(
+  filename
+) {
+
+  const password =
+    sessionStorage.getItem(
+      "adminPassword"
+    );
+
+
+  if (!password) {
     return;
   }
 
@@ -794,18 +1156,116 @@ async function deleteFile(
 
     const response =
       await fetch(
-        `${API}/delete`,
+        `${API}/admin/download?name=${encodeURIComponent(filename)}`,
+        {
+          method: "GET",
+
+          headers: {
+            "X-Admin-Password":
+              password
+          }
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+
+      throw new Error(
+        data.error ||
+        "다운로드 정보를 가져오지 못했습니다."
+      );
+    }
+
+
+    const link =
+      document.createElement("a");
+
+
+    link.href =
+      data.download_url;
+
+
+    link.download =
+      filename;
+
+
+    link.target =
+      "_blank";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+  } catch (error) {
+
+    alert(
+      error.message ||
+      "다운로드에 실패했습니다."
+    );
+  }
+}
+
+
+// ====================================
+// 관리자 삭제
+// ====================================
+
+async function adminDeleteFile(
+  filename
+) {
+
+  const confirmed =
+    confirm(
+      `"${filename}" 파일을 정말 삭제하시겠습니까?\n\nGitHub 저장소에서도 삭제됩니다.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const password =
+    sessionStorage.getItem(
+      "adminPassword"
+    );
+
+
+  if (!password) {
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/delete`,
         {
           method: "DELETE",
 
           headers: {
             "Content-Type":
-              "application/json"
+              "application/json",
+
+            "X-Admin-Password":
+              password
           },
 
-          body: JSON.stringify({
-            name: filename
-          })
+          body:
+            JSON.stringify({
+              name: filename
+            })
         }
       );
 
@@ -828,21 +1288,42 @@ async function deleteFile(
 
     showMessage(
       data.message ||
-      "삭제되었습니다.",
+      "파일이 삭제되었습니다.",
       true
     );
 
 
     loadFiles();
 
+    loadAdminFiles();
+
   } catch (error) {
 
-    showMessage(
+    alert(
       error.message ||
-      "삭제 중 오류가 발생했습니다.",
-      false
+      "삭제 중 오류가 발생했습니다."
     );
   }
+}
+
+
+// ====================================
+// 관리자 로그아웃
+// ====================================
+
+function logoutAdmin() {
+
+  sessionStorage.removeItem(
+    "adminPassword"
+  );
+
+
+  adminPanel.style.display =
+    "none";
+
+
+  adminFileList.innerHTML =
+    "";
 }
 
 
@@ -908,22 +1389,6 @@ function formatBytes(bytes) {
     " " +
     units[index]
   );
-}
-
-
-// ====================================
-// HTML 이스케이프
-// ====================================
-
-function escapeHtml(text) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent =
-    text;
-
-  return div.innerHTML;
 }
 
 
