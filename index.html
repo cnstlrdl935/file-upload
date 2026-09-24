@@ -51,7 +51,6 @@
     h1 {
       margin-top: 0;
       margin-bottom: 25px;
-
       font-size: 28px;
     }
 
@@ -69,9 +68,7 @@
 
     input[type="file"] {
       width: 100%;
-
       padding: 10px;
-
       font-size: 15px;
     }
 
@@ -176,20 +173,15 @@
     ></div>
 
 
-    <!--
-
-      중요:
-      fetch()를 사용하지 않습니다.
-
-      브라우저가 Worker로 직접
-      multipart/form-data POST를 전송합니다.
-
-    -->
+    <!-- 업로드 폼 -->
 
     <form
       id="uploadForm"
-      action="https://files.hjcone.worker.dev/upload"
+
+      action="https://files.hjcone.workers.dev/upload"
+
       method="POST"
+
       enctype="multipart/form-data"
     >
 
@@ -230,9 +222,13 @@
 
       <br><br>
 
-      업로드 과정은
-      <strong>GitHub Pages → Cloudflare Worker → GitHub</strong>
-      순서로 진행됩니다.
+      업로드 경로:
+
+      <strong>
+        GitHub Pages →
+        Cloudflare Workers →
+        GitHub
+      </strong>
 
     </div>
 
@@ -257,17 +253,18 @@ const message =
   document.getElementById("message");
 
 
-/*
-========================================
-파일 선택 표시
-========================================
-*/
+// ====================================
+// 파일 선택
+// ====================================
 
 fileInput.addEventListener(
   "change",
   function () {
 
-    if (fileInput.files.length === 0) {
+    if (
+      !fileInput.files ||
+      fileInput.files.length === 0
+    ) {
 
       fileName.textContent =
         "선택된 파일 없음";
@@ -278,26 +275,24 @@ fileInput.addEventListener(
     const file =
       fileInput.files[0];
 
-    const size =
-      formatFileSize(file.size);
-
     fileName.textContent =
-      `${file.name} (${size})`;
+      `${file.name} (${formatFileSize(file.size)})`;
   }
 );
 
 
-/*
-========================================
-업로드 시작
-========================================
-*/
+// ====================================
+// 업로드 버튼
+// ====================================
 
 form.addEventListener(
   "submit",
   function () {
 
-    if (fileInput.files.length === 0) {
+    if (
+      !fileInput.files ||
+      fileInput.files.length === 0
+    ) {
       return;
     }
 
@@ -305,16 +300,13 @@ form.addEventListener(
 
     uploadButton.textContent =
       "업로드 중...";
-
   }
 );
 
 
-/*
-========================================
-URL 결과 메시지
-========================================
-*/
+// ====================================
+// 결과 표시
+// ====================================
 
 const params =
   new URLSearchParams(
@@ -342,17 +334,13 @@ if (status && resultMessage) {
 
     message.className =
       "message error";
-
   }
-
 }
 
 
-/*
-========================================
-파일 크기 표시
-========================================
-*/
+// ====================================
+// 파일 크기
+// ====================================
 
 function formatFileSize(bytes) {
 
