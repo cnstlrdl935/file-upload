@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -8,9 +10,10 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Worker 연결 테스트</title>
+  <title>파일 업로드</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -18,164 +21,327 @@
     body {
       margin: 0;
       padding: 20px;
-      font-family: Arial, sans-serif;
+
+      font-family:
+        Arial,
+        "Noto Sans KR",
+        sans-serif;
+
       background: #f5f5f5;
       color: #222;
     }
 
     .container {
-      max-width: 700px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 600px;
+
+      margin: 40px auto;
+
+      padding: 30px;
+
       background: white;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+      border-radius: 16px;
+
+      box-shadow:
+        0 5px 25px
+        rgba(0, 0, 0, 0.08);
     }
 
     h1 {
       margin-top: 0;
+      margin-bottom: 25px;
+
+      font-size: 28px;
+    }
+
+    .file-box {
+      padding: 25px;
+
+      border: 2px dashed #bbb;
+
+      border-radius: 12px;
+
+      text-align: center;
+
+      margin-bottom: 20px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+
+      padding: 10px;
+
+      font-size: 15px;
+    }
+
+    .file-name {
+      margin-top: 15px;
+
+      font-size: 14px;
+
+      color: #555;
+
+      word-break: break-all;
     }
 
     button {
       width: 100%;
-      padding: 14px;
-      margin-top: 10px;
+
+      padding: 15px;
+
       border: 0;
-      border-radius: 8px;
+
+      border-radius: 10px;
+
       background: #222;
+
       color: white;
-      font-size: 16px;
+
+      font-size: 17px;
+
       cursor: pointer;
     }
 
-    button:active {
-      transform: scale(0.99);
+    button:hover {
+      opacity: 0.9;
     }
 
-    pre {
-      margin-top: 20px;
-      padding: 16px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      white-space: pre-wrap;
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+
+      margin-bottom: 20px;
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      line-height: 1.5;
+
       word-break: break-word;
-      min-height: 100px;
+    }
+
+    .message.success {
+      display: block;
+
+      background: #e8f7e8;
+      color: #176b17;
+    }
+
+    .message.error {
+      display: block;
+
+      background: #fdeaea;
+      color: #a11;
     }
 
     .info {
-      margin-top: 20px;
+      margin-top: 25px;
+
       padding: 15px;
-      background: #eef6ff;
-      border-radius: 8px;
+
+      background: #f3f3f3;
+
+      border-radius: 10px;
+
+      font-size: 13px;
+
       line-height: 1.6;
-      word-break: break-word;
+
+      color: #555;
     }
 
-    iframe {
-      width: 100%;
-      height: 100px;
-      margin-top: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: white;
-    }
   </style>
+
 </head>
+
 
 <body>
 
   <div class="container">
 
-    <h1>Cloudflare Worker 연결 테스트</h1>
+    <h1>파일 업로드</h1>
+
+
+    <!-- 결과 메시지 -->
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
+
+    <!--
+
+      중요:
+      fetch()를 사용하지 않습니다.
+
+      브라우저가 Worker로 직접
+      multipart/form-data POST를 전송합니다.
+
+    -->
+
+    <form
+      id="uploadForm"
+      action="https://files.hjcone.worker.dev/upload"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+
+      <div class="file-box">
+
+        <input
+          type="file"
+          id="file"
+          name="file"
+          required
+        >
+
+        <div
+          id="fileName"
+          class="file-name"
+        >
+          선택된 파일 없음
+        </div>
+
+      </div>
+
+
+      <button
+        id="uploadButton"
+        type="submit"
+      >
+        파일 업로드
+      </button>
+
+    </form>
+
 
     <div class="info">
-      <strong>현재 페이지</strong><br>
-      <span id="pageUrl"></span>
+
+      업로드된 파일은 GitHub 저장소의
+      <strong>uploads/</strong>
+      폴더에 저장됩니다.
+
       <br><br>
 
-      <strong>현재 Origin</strong><br>
-      <span id="origin"></span>
-      <br><br>
+      업로드 과정은
+      <strong>GitHub Pages → Cloudflare Worker → GitHub</strong>
+      순서로 진행됩니다.
 
-      <strong>Worker 주소</strong><br>
-      <span id="workerUrl"></span>
     </div>
-
-    <button onclick="testNormalFetch()">
-      1. 일반 Fetch 테스트
-    </button>
-
-    <button onclick="testNoCors()">
-      2. no-cors Fetch 테스트
-    </button>
-
-    <button onclick="testIframe()">
-      3. 브라우저 직접 연결 테스트
-    </button>
-
-    <pre id="result">아직 테스트하지 않았습니다.</pre>
-
-    <iframe
-      id="testFrame"
-      style="display:none;"
-    ></iframe>
 
   </div>
 
+
 <script>
 
-const API = "https://files.hjcone.worker.dev";
+const fileInput =
+  document.getElementById("file");
 
-const result = document.getElementById("result");
-const pageUrl = document.getElementById("pageUrl");
-const origin = document.getElementById("origin");
-const workerUrl = document.getElementById("workerUrl");
+const fileName =
+  document.getElementById("fileName");
 
-pageUrl.textContent = window.location.href;
-origin.textContent = window.location.origin;
-workerUrl.textContent = API;
+const form =
+  document.getElementById("uploadForm");
+
+const uploadButton =
+  document.getElementById("uploadButton");
+
+const message =
+  document.getElementById("message");
 
 
 /*
 ========================================
-1. 일반 Fetch 테스트
+파일 선택 표시
 ========================================
 */
 
-async function testNormalFetch() {
+fileInput.addEventListener(
+  "change",
+  function () {
 
-  result.textContent =
-    "1. 일반 Fetch 테스트 중...\n\n" +
-    API + "/ping";
+    if (fileInput.files.length === 0) {
 
-  try {
+      fileName.textContent =
+        "선택된 파일 없음";
 
-    const response = await fetch(
-      API + "/ping?test=" + Date.now(),
-      {
-        method: "GET",
-        cache: "no-store"
-      }
-    );
+      return;
+    }
 
-    const text = await response.text();
+    const file =
+      fileInput.files[0];
 
-    result.textContent =
-      "1. 일반 Fetch 테스트 성공\n\n" +
-      "status: " + response.status + "\n" +
-      "type: " + response.type + "\n" +
-      "url: " + response.url + "\n\n" +
-      "응답 내용:\n" +
-      text;
+    const size =
+      formatFileSize(file.size);
 
-  } catch (error) {
+    fileName.textContent =
+      `${file.name} (${size})`;
+  }
+);
 
-    result.textContent =
-      "1. 일반 Fetch 테스트 실패\n\n" +
-      "오류 이름: " + error.name + "\n" +
-      "오류 메시지: " + error.message + "\n\n" +
-      "요청 주소:\n" +
-      API + "/ping";
+
+/*
+========================================
+업로드 시작
+========================================
+*/
+
+form.addEventListener(
+  "submit",
+  function () {
+
+    if (fileInput.files.length === 0) {
+      return;
+    }
+
+    uploadButton.disabled = true;
+
+    uploadButton.textContent =
+      "업로드 중...";
+
+  }
+);
+
+
+/*
+========================================
+URL 결과 메시지
+========================================
+*/
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const status =
+  params.get("status");
+
+const resultMessage =
+  params.get("message");
+
+
+if (status && resultMessage) {
+
+  message.textContent =
+    resultMessage;
+
+  if (status === "success") {
+
+    message.className =
+      "message success";
+
+  } else {
+
+    message.className =
+      "message error";
 
   }
 
@@ -184,91 +350,42 @@ async function testNormalFetch() {
 
 /*
 ========================================
-2. no-cors 테스트
+파일 크기 표시
 ========================================
 */
 
-async function testNoCors() {
+function formatFileSize(bytes) {
 
-  result.textContent =
-    "2. no-cors Fetch 테스트 중...\n\n" +
-    "잠시 기다려 주세요.";
-
-  try {
-
-    const response = await fetch(
-      API + "/ping?nocors=" + Date.now(),
-      {
-        method: "GET",
-        mode: "no-cors",
-        cache: "no-store"
-      }
-    );
-
-    result.textContent =
-      "2. no-cors Fetch 테스트 성공\n\n" +
-      "response.type: " + response.type + "\n" +
-      "response.status: " + response.status + "\n\n" +
-      "이 결과가 나오면 브라우저에서\n" +
-      "Cloudflare Worker까지 연결된 것입니다.\n\n" +
-      "no-cors에서는 보안상 응답 내용을 읽을 수 없으므로\n" +
-      "type이 opaque로 나오는 것이 정상입니다.";
-
-  } catch (error) {
-
-    result.textContent =
-      "2. no-cors Fetch 테스트 실패\n\n" +
-      "오류 이름: " + error.name + "\n" +
-      "오류 메시지: " + error.message + "\n\n" +
-      "이 경우 CORS 이전의 네트워크 연결 문제일\n" +
-      "가능성이 있습니다.";
-
+  if (bytes === 0) {
+    return "0 B";
   }
 
-}
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB"
+  ];
 
+  const index =
+    Math.floor(
+      Math.log(bytes) /
+      Math.log(1024)
+    );
 
-/*
-========================================
-3. iframe 테스트
-========================================
-*/
+  const size =
+    bytes /
+    Math.pow(1024, index);
 
-function testIframe() {
-
-  result.textContent =
-    "3. 브라우저 직접 연결 테스트 중...\n\n" +
-    "잠시 기다려 주세요.";
-
-  const frame = document.getElementById("testFrame");
-
-  frame.style.display = "block";
-
-  frame.onload = function() {
-
-    result.textContent =
-      "3. 브라우저 직접 연결 테스트 성공\n\n" +
-      "Cloudflare Worker의 /ping 페이지가\n" +
-      "브라우저에서 로드되었습니다.\n\n" +
-      "Worker 주소:\n" +
-      API + "/ping";
-
-  };
-
-  frame.onerror = function() {
-
-    result.textContent =
-      "3. 브라우저 직접 연결 테스트 실패\n\n" +
-      "Worker 페이지를 로드하지 못했습니다.";
-
-  };
-
-  frame.src =
-    API + "/ping?iframe=" + Date.now();
-
+  return (
+    size.toFixed(2) +
+    " " +
+    units[index]
+  );
 }
 
 </script>
 
 </body>
+
 </html>
